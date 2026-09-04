@@ -1,0 +1,214 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Velora Fine Jewelry — premium artificial jewelry design system.
+ * Warm luxury: ivory canvas, ink text, gold used strictly as an accent.
+ * All colors are oklch tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-sand: var(--sand);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
+
+  --shadow-soft:
+    0 1px 2px oklch(0.279 0.041 260 / 0.04), 0 8px 24px -12px oklch(0.279 0.041 260 / 0.12);
+  --shadow-lift:
+    0 2px 4px oklch(0.279 0.041 260 / 0.04), 0 24px 48px -24px oklch(0.279 0.041 260 / 0.18);
+  --shadow-gold: 0 12px 40px -18px oklch(0.72 0.075 82 / 0.55);
+
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --radius: 0.25rem;
+
+  /* #FAF8F5 */
+  --background: oklch(0.977 0.005 85);
+  /* Dark rich ink text for strong contrast */
+  --foreground: oklch(0.14 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.14 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.14 0.02 260);
+  /* Primary solid black */
+  --primary: oklch(0.12 0.02 260);
+  --primary-foreground: oklch(0.985 0.002 247.839);
+  /* #E8D7AD */
+  --secondary: oklch(0.882 0.055 90);
+  --secondary-foreground: oklch(0.14 0.02 260);
+  --muted: oklch(0.955 0.008 85);
+  /* Darker slate for readable subtitles & secondary text (not washed out) */
+  --muted-foreground: oklch(0.35 0.025 264);
+  /* #C8A96A */
+  --accent: oklch(0.72 0.075 82);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0.002 247.839);
+  /* Borders */
+  --border: oklch(0.88 0.008 264);
+  --input: oklch(0.88 0.008 264);
+  --ring: oklch(0.72 0.075 82);
+
+  --gold: oklch(0.68 0.085 82);
+  --gold-light: oklch(0.882 0.055 90);
+  --ink: oklch(0.12 0.02 260);
+  --ink-foreground: oklch(0.985 0.002 247.839);
+  --sand: oklch(0.945 0.014 84);
+  --whatsapp: oklch(0.58 0.155 152);
+  --whatsapp-foreground: oklch(1 0 0);
+}
+
+.dark {
+  --background: oklch(0.18 0.025 264);
+  --foreground: oklch(0.977 0.005 85);
+  --card: oklch(0.24 0.025 264);
+  --card-foreground: oklch(0.977 0.005 85);
+  --popover: oklch(0.24 0.025 264);
+  --popover-foreground: oklch(0.977 0.005 85);
+  --primary: oklch(0.977 0.005 85);
+  --primary-foreground: oklch(0.14 0.02 260);
+  --secondary: oklch(0.32 0.03 264);
+  --secondary-foreground: oklch(0.977 0.005 85);
+  --muted: oklch(0.28 0.025 264);
+  --muted-foreground: oklch(0.75 0.02 264);
+  --accent: oklch(0.72 0.075 82);
+  --accent-foreground: oklch(0.14 0.02 260);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 18%);
+  --sand: oklch(0.28 0.025 264);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  blockquote {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--color-gold-light);
+    color: var(--color-ink);
+  }
+}
+
+/* Editorial display heading */
+@utility display-xl {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+}
+
+/* Small uppercase label used across sections */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+@utility gold-rule {
+  &::after {
+    content: "";
+    display: block;
+    width: 3rem;
+    height: 1px;
+    margin-top: 1rem;
+    background: var(--color-gold);
+  }
+}
+
+@utility link-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: currentColor;
+    transition: transform 0.4s var(--ease-luxe);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
