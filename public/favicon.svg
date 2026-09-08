@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E1B2" />
+      <stop offset="45%" stop-color="#C8A96A" />
+      <stop offset="100%" stop-color="#8F6E2E" />
+    </linearGradient>
+    <linearGradient id="highlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Luxury dark medallion backdrop for crisp contrast on all browser tabs -->
+  <circle cx="32" cy="32" r="30" fill="#141416" stroke="url(#gold)" stroke-width="2" />
+
+  <!-- Outer gem contour -->
+  <!-- Top crown facets -->
+  <polygon points="23,17 41,17 50,27 14,27" fill="url(#gold)" />
+  <polygon points="23,17 41,17 50,27 14,27" fill="url(#highlight)" />
+
+  <!-- Bottom pavilion facets -->
+  <polygon points="14,27 32,51 25,27" fill="#9E7C33" />
+  <polygon points="25,27 32,51 39,27" fill="url(#gold)" />
+  <polygon points="39,27 32,51 50,27" fill="#7A5D20" />
+
+  <!-- Center table reflection & sparkle -->
+  <polygon points="28,27 32,46 36,27" fill="#FFF4D1" opacity="0.9" />
+  <polygon points="26,19 38,19 41,24 23,24" fill="#FFFFFF" opacity="0.5" />
+</svg>
