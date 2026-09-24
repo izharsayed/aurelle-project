@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Check, Minus, Plus, Share2, Truck } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { Check, Minus, Plus, Share2, ShoppingBag, Truck } from "lucide-react";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { ProductBadge } from "./ProductBadge";
 import { Stars } from "@/components/site/Stars";
@@ -10,7 +11,8 @@ import { discountPercent, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function ProductInfo({ product }: { product: Product }) {
-  const { isWishlisted, toggleWishlist } = useStore();
+  const { isWishlisted, toggleWishlist, addToCart } = useStore();
+  const navigate = useNavigate();
   const [color, setColor] = useState(product.colors[0]?.name ?? "Gold");
   const [quantity, setQuantity] = useState(1);
   const [shared, setShared] = useState(false);
@@ -144,12 +146,39 @@ export function ProductInfo({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-col gap-3">
-        <WhatsAppButton product={product} color={color} quantity={quantity} size="brand" />
+        {/* Primary Checkout Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Button
+            variant="gold"
+            size="brand"
+            disabled={!product.inStock}
+            onClick={() => addToCart(product, color, quantity)}
+            className="w-full flex items-center justify-center gap-2 text-xs uppercase tracking-widest font-semibold"
+          >
+            <ShoppingBag className="size-4" strokeWidth={1.5} />
+            <span>{product.inStock ? "Add to Bag" : "Out of Stock"}</span>
+          </Button>
+
+          <Button
+            variant="default"
+            size="brand"
+            disabled={!product.inStock}
+            onClick={() => {
+              addToCart(product, color, quantity);
+              navigate({ to: "/checkout" });
+            }}
+            className="w-full text-xs uppercase tracking-widest font-semibold bg-ink text-ink-foreground hover:bg-gold hover:text-white transition-colors"
+          >
+            <span>Instant Checkout</span>
+          </Button>
+        </div>
+
+        {/* Secondary Actions: Wishlist, Share & WhatsApp Advice */}
         <div className="flex items-center gap-3">
           <Button
             variant="line"
             size="brand"
-            className="flex-1"
+            className="flex-1 text-xs uppercase tracking-wider"
             aria-pressed={isWishlisted(product.id)}
             onClick={() => toggleWishlist(product)}
           >
@@ -159,6 +188,15 @@ export function ProductInfo({ product }: { product: Product }) {
             {shared ? <Check aria-hidden /> : <Share2 aria-hidden strokeWidth={1.5} />}
           </Button>
         </div>
+
+        {/* WhatsApp Styling Consultation */}
+        <WhatsAppButton
+          product={product}
+          color={color}
+          quantity={quantity}
+          size="brandSm"
+          className="w-full bg-muted/40 hover:bg-whatsapp/10 hover:text-whatsapp text-muted-foreground border border-border/80 text-[0.7rem] uppercase tracking-wider"
+        />
       </div>
 
       <p className="flex items-center gap-3 border-t border-border pt-6 text-xs text-muted-foreground">

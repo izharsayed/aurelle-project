@@ -137,7 +137,7 @@ export function ProductEditDialog({
             <div className="space-y-1.5">
               <Label htmlFor="category">Category</Label>
               <Select
-                value={formData.category}
+                value={formData.category || ""}
                 onValueChange={(val) =>
                   setFormData((prev) => ({ ...prev, category: val as CategorySlug }))
                 }

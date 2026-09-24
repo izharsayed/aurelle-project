@@ -121,8 +121,8 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
 
   // 4. Set as primary
   const handleSetPrimary = (index: number) => {
-    if (index === 0) return;
-    const selected = images[index];
+    if (index === 0 || !images[index]) return;
+    const selected = images[index]!;
     const rest = images.filter((_, i) => i !== index);
     onChange([selected, ...rest]);
     toast.success("Primary image updated");

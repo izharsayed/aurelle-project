@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Expand, MessageCircle } from "lucide-react";
+import { Expand, ShoppingBag } from "lucide-react";
 import { motion } from "motion/react";
 import { ProductBadge } from "./ProductBadge";
 import { WishlistButton } from "./WishlistButton";
-import { WhatsAppButton } from "@/components/site/WhatsAppButton";
+import { Button } from "@/components/ui/button";
 import { Stars } from "@/components/site/Stars";
 import { useStore } from "@/context/store-context";
 import type { Product } from "@/data/types";
@@ -33,9 +33,9 @@ function Badges({ product }: { product: Product }) {
 }
 
 export function ProductCard({ product, layout = "grid", priority = false }: ProductCardProps) {
-  const { setQuickView, requestOrder } = useStore();
+  const { setQuickView, addToCart } = useStore();
   const [selectedColor, setSelectedColor] = useState<string>(
-    product.colors && product.colors.length > 0 ? product.colors[0].name : "Standard",
+    product.colors?.[0]?.name ?? "Standard",
   );
 
   const isList = layout === "list";
@@ -191,7 +191,16 @@ export function ProductCard({ product, layout = "grid", priority = false }: Prod
         {/* Action Row */}
         {isList ? (
           <div className="mt-4 flex flex-wrap gap-2">
-            <WhatsAppButton product={product} color={selectedColor} className="sm:w-auto sm:px-6" />
+            <Button
+              size="sm"
+              variant="gold"
+              disabled={!product.inStock}
+              onClick={() => addToCart(product, selectedColor, 1)}
+              className="text-xs uppercase tracking-wider gap-1.5"
+            >
+              <ShoppingBag className="size-3.5" />
+              <span>{product.inStock ? "Add to Bag" : "Out of Stock"}</span>
+            </Button>
             <button
               type="button"
               onClick={() => setQuickView(product)}
@@ -202,20 +211,20 @@ export function ProductCard({ product, layout = "grid", priority = false }: Prod
           </div>
         ) : (
           <div className="mt-3 pt-2 sm:pt-3 border-t border-border/50 flex items-center gap-1.5">
-            {/* Minimalist luxury WhatsApp button */}
+            {/* Minimalist luxury Add to Bag button */}
             <button
               type="button"
               disabled={!product.inStock}
-              onClick={() => requestOrder({ product, color: selectedColor, quantity: 1 })}
+              onClick={() => addToCart(product, selectedColor, 1)}
               className={cn(
                 "flex-1 flex items-center justify-center gap-1.5 rounded-sm py-2 px-2 text-[0.65rem] sm:text-xs tracking-wider uppercase font-medium transition-all cursor-pointer",
                 product.inStock
-                  ? "bg-whatsapp text-white hover:bg-whatsapp/90 active:scale-[0.98] shadow-xs"
+                  ? "bg-primary text-primary-foreground hover:bg-gold hover:text-white active:scale-[0.98] shadow-xs"
                   : "bg-muted text-muted-foreground cursor-not-allowed",
               )}
             >
-              <MessageCircle className="size-3.5 shrink-0" strokeWidth={1.75} />
-              <span>{product.inStock ? "Order" : "Out of Stock"}</span>
+              <ShoppingBag className="size-3.5 shrink-0" strokeWidth={1.75} />
+              <span>{product.inStock ? "Add to Bag" : "Out of Stock"}</span>
             </button>
 
             {/* Mobile Quick View icon button */}

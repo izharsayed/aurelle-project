@@ -80,9 +80,103 @@ export interface InquiryRecord {
   productName: string;
   productSku: string;
   category: CategorySlug;
-  finish?: string;
+  finish?: string | undefined;
   quantity: number;
   totalPrice: number;
   message: string;
 }
+
+// -------------------------------------------------------------
+// E-Commerce Cart, Checkout & Orders Types
+// -------------------------------------------------------------
+
+export interface CartItem {
+  productId: string;
+  name: string;
+  slug: string;
+  sku: string;
+  price: number;
+  salePrice: number | null;
+  image: string;
+  color?: string | undefined;
+  quantity: number;
+}
+
+export interface CustomerDetails {
+  fullName: string;
+  mobileNumber: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+}
+
+export type OrderStatus =
+  | "PENDING_PAYMENT"
+  | "PAID"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+
+export type PaymentStatus =
+  | "PENDING"
+  | "SUCCESS"
+  | "FAILED"
+  | "CANCELLED"
+  | "REFUNDED";
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  color?: string | undefined;
+  image?: string | undefined;
+}
+
+export interface OrderPayment {
+  gateway: "cashfree";
+  gatewayOrderId?: string | undefined;
+  gatewayPaymentId?: string | undefined;
+  status: PaymentStatus;
+  method?: string | undefined;
+  paymentSessionId?: string | undefined;
+  paidAt?: string | undefined;
+}
+
+export interface Order {
+  id: string; // Firestore document ID
+  orderId: string; // Human-friendly order number e.g. ORD-2026-000001
+  customerId?: string | undefined;
+  customer: CustomerDetails;
+  items: OrderItem[];
+  subtotal: number;
+  shippingAmount: number;
+  totalAmount: number;
+  currency: "INR";
+  payment: OrderPayment;
+  status: OrderStatus;
+  notes?: string | undefined;
+  createdAt: string; // ISO 8601 string
+  updatedAt: string; // ISO 8601 string
+}
+
+export interface PaymentRecord {
+  id: string;
+  paymentId: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  gateway: "cashfree";
+  status: PaymentStatus;
+  method?: string | undefined;
+  bankReference?: string | undefined;
+  rawResponse?: Record<string, unknown> | undefined;
+  createdAt: string;
+}
+
 

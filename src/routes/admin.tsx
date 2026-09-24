@@ -3,21 +3,29 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Archive,
   Check,
+  CheckCircle2,
+  Clock,
+  CreditCard,
   Edit2,
   ExternalLink,
   Eye,
   KeyRound,
   Layers,
   Lock,
+  MapPin,
   MessageCircle,
   Package,
   Plus,
   RefreshCw,
   Search,
   Settings,
+  ShoppingBag,
   Sparkles,
   Trash2,
   TrendingUp,
+  Truck,
+  X,
+  XCircle,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
@@ -28,6 +36,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -58,7 +67,7 @@ import {
 import { useStore } from "@/context/store-context";
 import { categories } from "@/data/categories";
 import { formatPrice } from "@/lib/format";
-import type { CategorySlug, Product } from "@/data/types";
+import type { CategorySlug, Order, OrderStatus, Product } from "@/data/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
@@ -107,6 +116,85 @@ function AdminPage() {
   const [customWaInput, setCustomWaInput] = useState(whatsappNumber);
   const [currentPinInput, setCurrentPinInput] = useState("");
   const [newPinInput, setNewPinInput] = useState("");
+
+  // Orders Management State
+  const [adminOrders, setAdminOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState("all");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  const fetchAdminOrders = async () => {
+    setOrdersLoading(true);
+    try {
+      const res = await fetch("/api/admin/orders");
+      if (res.ok) {
+        const data = await res.json();
+        setAdminOrders(data.orders || []);
+      }
+    } catch (err) {
+      console.error("Failed to load admin orders:", err);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchAdminOrders();
+    }
+  }, [isAuthenticated]);
+
+  const handleUpdateStatus = async (orderId: string, nextStatus: OrderStatus) => {
+    try {
+      const res = await fetch("/api/admin/orders/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, status: nextStatus }),
+      });
+      if (res.ok) {
+        toast.success(`Order ${orderId} status set to ${nextStatus}`);
+        setAdminOrders((prev) =>
+          prev.map((o) => (o.orderId === orderId ? { ...o, status: nextStatus } : o)),
+        );
+        if (selectedOrder?.orderId === orderId) {
+          setSelectedOrder((prev) => (prev ? { ...prev, status: nextStatus } : null));
+        }
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch {
+      toast.error("Network error");
+    }
+  };
+
+  const filteredOrders = useMemo(() => {
+    return adminOrders.filter((o) => {
+      const matchesSearch =
+        !orderSearchQuery.trim() ||
+        o.orderId.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        o.customer.fullName.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        o.customer.mobileNumber.includes(orderSearchQuery) ||
+        o.customer.email.toLowerCase().includes(orderSearchQuery.toLowerCase());
+
+      const matchesStatus =
+        orderStatusFilter === "all" ||
+        o.status === orderStatusFilter ||
+        o.payment.status === orderStatusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [adminOrders, orderSearchQuery, orderStatusFilter]);
+
+  const totalRevenue = useMemo(() => {
+    return adminOrders
+      .filter((o) => o.status === "PAID" || o.payment.status === "SUCCESS")
+      .reduce((sum, o) => sum + o.totalAmount, 0);
+  }, [adminOrders]);
+
+  const paidOrdersCount = useMemo(() => {
+    return adminOrders.filter((o) => o.status === "PAID" || o.payment.status === "SUCCESS").length;
+  }, [adminOrders]);
 
   // Check session storage on mount
   useEffect(() => {
@@ -285,6 +373,10 @@ function AdminPage() {
               <TabsTrigger value="catalog" className="gap-1.5 text-xs">
                 <Package className="size-3.5" />
                 Catalog ({products.length})
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="gap-1.5 text-xs">
+                <ShoppingBag className="size-3.5" />
+                Orders ({adminOrders.length})
               </TabsTrigger>
               <TabsTrigger value="inquiries" className="gap-1.5 text-xs">
                 <MessageCircle className="size-3.5" />
@@ -788,6 +880,159 @@ function AdminPage() {
             </Card>
           </TabsContent>
 
+          {/* TAB 3: ORDERS (Cashfree & Firebase) */}
+          <TabsContent value="orders" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <ShoppingBag className="size-4 text-gold" />
+                    Customer Orders (Cashfree & Firebase)
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Live customer orders with server-verified Cashfree payment status and fulfillment tracking.
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fetchAdminOrders}
+                    disabled={ordersLoading}
+                    className="text-xs gap-1.5"
+                  >
+                    <RefreshCw className={ordersLoading ? "size-3.5 animate-spin" : "size-3.5"} />
+                    <span>Refresh Orders</span>
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                {/* Search & Status Filters */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="size-4 absolute left-3 top-2.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by Order ID, customer, phone, or email..."
+                      value={orderSearchQuery}
+                      onChange={(e) => setOrderSearchQuery(e.target.value)}
+                      className="pl-9 text-xs"
+                    />
+                  </div>
+
+                  <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
+                    <SelectTrigger className="w-full sm:w-44 text-xs">
+                      <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="PAID">PAID</SelectItem>
+                      <SelectItem value="PENDING_PAYMENT">PENDING_PAYMENT</SelectItem>
+                      <SelectItem value="PROCESSING">PROCESSING</SelectItem>
+                      <SelectItem value="SHIPPED">SHIPPED</SelectItem>
+                      <SelectItem value="DELIVERED">DELIVERED</SelectItem>
+                      <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Orders Table */}
+                <div className="overflow-x-auto rounded-xs border border-border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="text-xs font-semibold uppercase tracking-wider">
+                        <TableHead>Order ID</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Items</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Payment</TableHead>
+                        <TableHead>Fulfillment</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredOrders.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
+                            {ordersLoading ? "Loading orders from database..." : "No matching customer orders found."}
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredOrders.map((ord) => (
+                          <TableRow key={ord.orderId}>
+                            <TableCell className="font-mono text-xs font-semibold text-foreground">
+                              {ord.orderId}
+                            </TableCell>
+                            <TableCell className="text-xs">
+                              <span className="font-medium text-foreground block">{ord.customer.fullName}</span>
+                              <span className="text-muted-foreground text-[11px]">+91 {ord.customer.mobileNumber}</span>
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                              {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </TableCell>
+                            <TableCell className="text-xs text-foreground">
+                              {ord.items.length} {ord.items.length === 1 ? "piece" : "pieces"}
+                            </TableCell>
+                            <TableCell className="font-semibold text-xs text-gold">
+                              {formatPrice(ord.totalAmount)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  ord.payment.status === "SUCCESS" || ord.status === "PAID"
+                                    ? "default"
+                                    : ord.payment.status === "FAILED"
+                                    ? "destructive"
+                                    : "secondary"
+                                }
+                                className="text-[10px] tracking-wider uppercase font-semibold"
+                              >
+                                {ord.payment.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={ord.status}
+                                onValueChange={(val: OrderStatus) => handleUpdateStatus(ord.orderId, val)}
+                              >
+                                <SelectTrigger className="h-7 text-[11px] w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="PAID">PAID</SelectItem>
+                                  <SelectItem value="PROCESSING">PROCESSING</SelectItem>
+                                  <SelectItem value="SHIPPED">SHIPPED</SelectItem>
+                                  <SelectItem value="DELIVERED">DELIVERED</SelectItem>
+                                  <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedOrder(ord)}
+                                className="text-xs text-gold hover:text-gold/80"
+                              >
+                                Details
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* TAB 4: SETTINGS */}
           <TabsContent value="settings" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
@@ -890,6 +1135,145 @@ function AdminPage() {
         onOpenChange={setIsAddOpen}
         onAdd={addProduct}
       />
+
+      {/* Order Details Dialog */}
+      <Dialog open={Boolean(selectedOrder)} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedOrder && (
+            <div className="space-y-6">
+              <DialogHeader>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <DialogTitle className="font-serif text-2xl">
+                      Order Details: {selectedOrder.orderId}
+                    </DialogTitle>
+                    <DialogDescription className="text-xs">
+                      Placed on {new Date(selectedOrder.createdAt).toLocaleString("en-IN")}
+                    </DialogDescription>
+                  </div>
+                  <Badge
+                    variant={
+                      selectedOrder.payment.status === "SUCCESS" || selectedOrder.status === "PAID"
+                        ? "default"
+                        : "secondary"
+                    }
+                    className="uppercase tracking-wider text-xs"
+                  >
+                    Payment: {selectedOrder.payment.status}
+                  </Badge>
+                </div>
+              </DialogHeader>
+
+              {/* Customer and Delivery Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xs bg-muted/30 p-4 text-xs">
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
+                    Customer
+                  </p>
+                  <p className="font-medium text-foreground">{selectedOrder.customer.fullName}</p>
+                  <p className="text-muted-foreground">{selectedOrder.customer.email}</p>
+                  <p className="font-mono text-muted-foreground">+91 {selectedOrder.customer.mobileNumber}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
+                    Delivery Destination
+                  </p>
+                  <p className="text-muted-foreground">{selectedOrder.customer.address}</p>
+                  <p className="text-muted-foreground">
+                    {selectedOrder.customer.city}, {selectedOrder.customer.state} — {selectedOrder.customer.pincode}
+                  </p>
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div className="space-y-3">
+                <h4 className="font-serif text-base text-foreground">Ordered Pieces</h4>
+                <div className="divide-y divide-border/60 border-y border-border/60">
+                  {selectedOrder.items.map((item) => (
+                    <div key={item.productId} className="py-2.5 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-3">
+                        {item.image && (
+                          <img src={item.image} alt={item.name} className="size-10 object-cover rounded-xs" />
+                        )}
+                        <div>
+                          <p className="font-medium text-foreground">{item.name}</p>
+                          <p className="text-muted-foreground text-[11px]">
+                            Qty: {item.quantity} {item.color ? `• Finish: ${item.color}` : ""} • SKU: {item.sku}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="font-medium">{formatPrice(item.subtotal)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-1 text-xs pt-1">
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatPrice(selectedOrder.subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Shipping</span>
+                    <span>{selectedOrder.shippingAmount === 0 ? "Complimentary" : formatPrice(selectedOrder.shippingAmount)}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-sm pt-1 border-t border-border/60">
+                    <span>Total</span>
+                    <span className="text-gold">{formatPrice(selectedOrder.totalAmount)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cashfree Payment Gateway Details */}
+              <div className="rounded-xs border border-border/80 p-3.5 text-xs space-y-1.5 bg-card">
+                <p className="font-semibold text-foreground uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <CreditCard className="size-3.5 text-gold" />
+                  Cashfree Gateway Transaction
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-muted-foreground text-[11px]">
+                  <div>
+                    <span>Gateway: </span>
+                    <strong className="text-foreground capitalize">{selectedOrder.payment.gateway}</strong>
+                  </div>
+                  <div>
+                    <span>Payment ID: </span>
+                    <span className="font-mono text-foreground">{selectedOrder.payment.gatewayPaymentId || "N/A"}</span>
+                  </div>
+                  <div>
+                    <span>Payment Method: </span>
+                    <span className="text-foreground">{selectedOrder.payment.method || "Online"}</span>
+                  </div>
+                  <div>
+                    <span>Paid At: </span>
+                    <span className="text-foreground">{selectedOrder.payment.paidAt ? new Date(selectedOrder.payment.paidAt).toLocaleString("en-IN") : "Awaiting"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fulfillment Status Updater */}
+              <div className="flex items-center justify-between gap-4 pt-2 border-t border-border/80">
+                <span className="text-xs font-medium text-foreground">Update Fulfillment State:</span>
+                <Select
+                  value={selectedOrder.status}
+                  onValueChange={(val: OrderStatus) => handleUpdateStatus(selectedOrder.orderId, val)}
+                >
+                  <SelectTrigger className="w-44 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PAID">PAID</SelectItem>
+                    <SelectItem value="PROCESSING">PROCESSING</SelectItem>
+                    <SelectItem value="SHIPPED">SHIPPED</SelectItem>
+                    <SelectItem value="DELIVERED">DELIVERED</SelectItem>
+                    <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

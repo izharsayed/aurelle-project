@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { ChevronDown, Heart, MessageCircle, Search } from "lucide-react";
+import { ChevronDown, Heart, MessageCircle, Search, ShoppingBag } from "lucide-react";
 import { MobileMenu } from "./MobileMenu";
 import { AnimatedHamburger } from "./AnimatedHamburger";
 import { CategoryDropdown } from "./CategoryDropdown";
@@ -9,15 +9,21 @@ import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { useStore } from "@/context/store-context";
 import { cn } from "@/lib/utils";
 
-export const navLinks = [
+export interface NavLinkItem {
+  label: string;
+  to: string;
+  hasDropdown?: boolean;
+}
+
+export const navLinks: NavLinkItem[] = [
   { label: "Shop", to: "/shop", hasDropdown: true },
   { label: "Collections", to: "/collections" },
   { label: "New Arrivals", to: "/new-arrivals" },
   { label: "Our Story", to: "/about" },
-] as const;
+];
 
 export function Header() {
-  const { setSearchOpen, wishlist } = useStore();
+  const { setSearchOpen, wishlist, cartCount, setCartOpen } = useStore();
   const location = useLocation();
   const [compact, setCompact] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -187,6 +193,21 @@ export function Header() {
                 </span>
               )}
             </Link>
+
+            {/* Shopping Bag Trigger with Live Counter */}
+            <button
+              type="button"
+              aria-label="View shopping bag"
+              onClick={() => setCartOpen(true)}
+              className={cn(iconClass, "relative")}
+            >
+              <ShoppingBag aria-hidden className="size-4.5" strokeWidth={1.5} />
+              {cartCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 flex size-4 items-center justify-center rounded-full bg-gold text-[0.55rem] font-bold text-accent-foreground shadow-xs animate-in zoom-in-50">
+                  {cartCount}
+                </span>
+              )}
+            </button>
 
             {/* Theme Toggle (Dark / Light) */}
             <ThemeToggle className={iconClass} />

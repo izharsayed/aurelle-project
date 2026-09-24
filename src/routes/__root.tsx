@@ -18,6 +18,7 @@ import { QuickViewModal } from "@/components/shop/QuickViewModal";
 import { WhatsAppOrderModal } from "@/components/site/WhatsAppOrderModal";
 import { LoadingScreen } from "@/components/site/LoadingScreen";
 import { PagePreloader } from "@/components/site/PagePreloader";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/context/store-context";
 
@@ -169,6 +170,7 @@ function RootComponent() {
         <PagePreloader />
         <Toaster position="top-right" richColors />
         {!isAdmin && <SearchOverlay />}
+        {!isAdmin && <CartDrawer />}
         <QuickViewModal />
         <WhatsAppOrderModal />
       </StoreProvider>

@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'admin'
+      );
+    }
+
+    // 1. Orders Collection
+    // Customers can only read an order if they are authenticated and match customerId,
+    // or through server-side Admin SDK verification.
+    // DIRECT WRITES FROM CLIENT BROWSERS ARE STRICTLY FORBIDDEN to prevent payment/price manipulation.
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (
+        isAuthenticated() && resource.data.customerId == request.auth.uid
+      );
+      // All creation, updates, and status transitions MUST happen via Server APIs (Firebase Admin SDK)
+      allow create, update, delete: if false;
+    }
+
+    // 2. Payments Collection
+    // Authoritative payment records from Cashfree webhooks.
+    // Client write is strictly forbidden.
+    match /payments/{paymentId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // 3. Products Collection
+    // Public catalog read-only.
+    // Only verified Admins can create/update products directly via Firestore.
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 4. Customers Collection
+    match /customers/{customerId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == customerId);
+      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == customerId);
+    }
+
+    // 5. Trigger Email Collection (Firebase Trigger Email extension)
+    // Server-only write via Admin SDK; no public reads or writes.
+    match /mail/{mailId} {
+      allow read, write: if false;
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

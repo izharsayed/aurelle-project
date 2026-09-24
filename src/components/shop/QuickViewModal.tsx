@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import { ShoppingBag } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Stars } from "@/components/site/Stars";
 import { WishlistButton } from "./WishlistButton";
 import { ProductBadge } from "./ProductBadge";
@@ -9,7 +9,7 @@ import { useStore } from "@/context/store-context";
 import { discountPercent, formatPrice } from "@/lib/format";
 
 export function QuickViewModal() {
-  const { quickView, setQuickView } = useStore();
+  const { quickView, setQuickView, addToCart } = useStore();
   const product = quickView;
 
   return (
@@ -67,7 +67,19 @@ export function QuickViewModal() {
               </dl>
 
               <div className="mt-auto flex flex-col gap-3">
-                <WhatsAppButton product={product} color={product.colors[0]?.name} size="brand" />
+                <Button
+                  variant="gold"
+                  size="brand"
+                  disabled={!product.inStock}
+                  onClick={() => {
+                    addToCart(product, product.colors[0]?.name, 1);
+                    setQuickView(null);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 text-xs uppercase tracking-widest font-semibold"
+                >
+                  <ShoppingBag className="size-4" strokeWidth={1.5} />
+                  <span>{product.inStock ? "Add to Bag" : "Out of Stock"}</span>
+                </Button>
                 <div className="flex items-center gap-3">
                   <Button asChild variant="line" size="brandSm" className="flex-1">
                     <Link

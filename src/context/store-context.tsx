@@ -1,17 +1,29 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import type { InquiryRecord, Product } from "@/data/types";
+import type { CartItem, InquiryRecord, Product } from "@/data/types";
 import { products as defaultProducts } from "@/data/products";
 import { buildOrderMessage, buildWhatsAppUrl, type OrderIntent } from "@/lib/whatsapp";
 import { toast } from "sonner";
 
 const WISHLIST_KEY = "aurelle.wishlist";
+const CART_KEY = "aurelle.cart";
 const CATALOG_KEY = "aurelle.catalog.v1";
 const INQUIRIES_KEY = "aurelle.inquiries";
 const WHATSAPP_KEY = "aurelle.whatsapp_number";
 const THEME_KEY = "aurelle.theme";
 
 interface StoreValue {
+  // Shopping Cart & Bag
+  cart: CartItem[];
+  addToCart: (product: Product, color?: string, quantity?: number) => void;
+  updateCartQuantity: (productId: string, color: string | undefined, quantity: number) => void;
+  removeFromCart: (productId: string, color?: string) => void;
+  clearCart: () => void;
+  cartTotal: number;
+  cartCount: number;
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
+
   // Wishlist
   wishlist: string[];
   isWishlisted: (id: string) => boolean;
@@ -24,7 +36,7 @@ interface StoreValue {
   setSearchOpen: (open: boolean) => void;
   quickView: Product | null;
   setQuickView: (product: Product | null) => void;
-  orderPreview: { message: string; product: Product; whatsappNumber?: string } | null;
+  orderPreview: { message: string; product: Product; whatsappNumber?: string | undefined } | null;
   requestOrder: (intent: OrderIntent) => void;
   closeOrderPreview: () => void;
 
@@ -54,6 +66,8 @@ const StoreContext = createContext<StoreValue | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickView, setQuickView] = useState<Product | null>(null);
   const [orderPreview, setOrderPreview] = useState<StoreValue["orderPreview"]>(null);
@@ -71,6 +85,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const savedWishlist = window.localStorage.getItem(WISHLIST_KEY);
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist) as string[]);
+
+      const savedCart = window.localStorage.getItem(CART_KEY);
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart) as CartItem[];
+        if (Array.isArray(parsed)) setCart(parsed);
+      }
 
       const savedCatalog = window.localStorage.getItem(CATALOG_KEY);
       if (savedCatalog) {
@@ -112,6 +132,95 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
   }, [wishlist]);
+
+  // Sync cart
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    } catch {
+      /* ignore */
+    }
+  }, [cart]);
+
+  // Cart totals & metrics
+  const cartCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
+  const cartTotal = useMemo(
+    () => cart.reduce((acc, item) => acc + (item.salePrice ?? item.price) * item.quantity, 0),
+    [cart],
+  );
+
+  // Cart actions
+  const addToCart = useCallback((product: Product, color?: string, quantity: number = 1) => {
+    const chosenColor = color || product.colors[0]?.name || "Standard";
+    setCart((prev) => {
+      const existingIndex = prev.findIndex(
+        (i) => i.productId === product.id && i.color === chosenColor,
+      );
+      if (existingIndex > -1) {
+        const updated = [...prev];
+        const existing = updated[existingIndex]!;
+        const newQty = Math.min(10, existing.quantity + quantity);
+        updated[existingIndex] = {
+          ...existing,
+          quantity: newQty,
+        };
+        return updated;
+      }
+
+      const newItem: CartItem = {
+        productId: product.id,
+        name: product.name,
+        slug: product.slug,
+        sku: product.sku,
+        price: product.price,
+        salePrice: product.salePrice,
+        image: product.images[0] || "",
+        color: chosenColor,
+        quantity: Math.min(10, Math.max(1, quantity)),
+      };
+      return [newItem, ...prev];
+    });
+
+    toast.success("Added to shopping bag", {
+      description: `${product.name}${chosenColor ? ` • ${chosenColor}` : ""}`,
+    });
+    setCartOpen(true);
+  }, []);
+
+  const updateCartQuantity = useCallback(
+    (productId: string, color: string | undefined, quantity: number) => {
+      setCart((prev) => {
+        if (quantity <= 0) {
+          return prev.filter((i) => !(i.productId === productId && i.color === color));
+        }
+        return prev.map((i) =>
+          i.productId === productId && i.color === color
+            ? { ...i, quantity: Math.min(10, Math.max(1, quantity)) }
+            : i,
+        );
+      });
+    },
+    [],
+  );
+
+  const removeFromCart = useCallback((productId: string, color?: string) => {
+    setCart((prev) => {
+      const match = prev.find((i) => i.productId === productId && i.color === color);
+      if (match) {
+        toast.info("Piece removed from shopping bag", { description: match.name });
+      }
+      return prev.filter((i) => !(i.productId === productId && i.color === color));
+    });
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCart([]);
+    try {
+      window.localStorage.removeItem(CART_KEY);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // Sync catalog
   const saveCatalog = useCallback((next: Product[]) => {
@@ -309,6 +418,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<StoreValue>(
     () => ({
+      // Cart
+      cart,
+      addToCart,
+      updateCartQuantity,
+      removeFromCart,
+      clearCart,
+      cartTotal,
+      cartCount,
+      cartOpen,
+      setCartOpen,
+
+      // Wishlist
       wishlist,
       isWishlisted: (id) => wishlist.includes(id),
       toggleWishlist,
@@ -336,6 +457,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setTheme,
     }),
     [
+      cart,
+      addToCart,
+      updateCartQuantity,
+      removeFromCart,
+      clearCart,
+      cartTotal,
+      cartCount,
+      cartOpen,
+      setCartOpen,
       wishlist,
       toggleWishlist,
       removeFromWishlist,

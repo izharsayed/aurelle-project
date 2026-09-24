@@ -34,9 +34,53 @@ export default defineConfig(({ command }) => ({
       },
     }),
     viteReact(),
+    {
+      name: "velora-dev-api",
+      configureServer(server: any) {
+        server.middlewares.use(async (req: any, res: any, next: any) => {
+          if (!req.url?.startsWith("/api/")) return next();
+          try {
+            const { handleApiRoute } = await server.ssrLoadModule("./src/server/handler.ts");
+            const protocol = req.headers["x-forwarded-proto"] || "http";
+            const host = req.headers.host || "localhost:8080";
+            const fullUrl = `${protocol}://${host}${req.url}`;
+
+            let body: any = undefined;
+            if (req.method !== "GET" && req.method !== "HEAD") {
+              const chunks: Buffer[] = [];
+              for await (const chunk of req) {
+                chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+              }
+              body = Buffer.concat(chunks);
+            }
+
+            const webReq = new Request(fullUrl, {
+              method: req.method,
+              headers: req.headers as any,
+              body,
+              // Node fetch needs duplex: 'half' when body is present
+              ...(body ? { duplex: "half" } : {}),
+            } as any);
+
+            const webRes = await handleApiRoute(webReq);
+            if (!webRes) return next();
+
+            res.statusCode = webRes.status;
+            webRes.headers.forEach((val: string, key: string) => {
+              res.setHeader(key, val);
+            });
+            const resBody = Buffer.from(await webRes.arrayBuffer());
+            res.end(resBody);
+          } catch (err) {
+            console.error("Vite dev API error:", err);
+            next(err);
+          }
+        });
+      },
+    },
     command === "build"
       ? nitro({
-          defaultPreset: process.env.NITRO_PRESET || "cloudflare-module",
+          defaultPreset: process.env["NITRO_PRESET"] || "cloudflare-module",
         })
       : null,
   ].filter(Boolean),
