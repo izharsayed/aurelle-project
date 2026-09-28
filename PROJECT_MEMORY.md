@@ -114,6 +114,12 @@ This document serves as the complete, chronological memory and technical referen
   - `payments/{paymentId}`: Gateway audit records.
   - `products/{productId}`: Authoritative catalog.
   - `mail/{mailId}`: Transactional email queue compatible with Firebase Trigger Email extension.
+
+### L. Live Firebase Cloud Firestore Integration & Catalog Seeding
+- **Live Database Connection**: Connected to live Cloud Firestore project `velora-f972a` via service account REST client.
+- **Environment Configuration**: Configured `.env` with `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY`.
+- **Authoritative Data Seeding**: Seeded **30 luxury artificial jewelry products** into the live `products` collection in Firestore.
+
 - **Storefront & Admin UI**:
   - `CartDrawer.tsx` & `/cart`: Sliding bag drawer + detailed cart page with quantity adjustments, free delivery threshold indicator (₹2,500), and subtotal breakdown.
   - `Header.tsx`: Added luxury Shopping Bag button with live item counter badge.
