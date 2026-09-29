@@ -42,7 +42,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     // 1. Create Cashfree Order
     if (pathname === "/api/payments/create-order" && request.method === "POST") {
       const body = await request.json();
-      const result = await handleCreateOrder(body, request.url);
+      const result = await handleCreateOrder(body, request.url, env);
       return new Response(JSON.stringify(result), { status: 200, headers: jsonHeaders });
     }
 

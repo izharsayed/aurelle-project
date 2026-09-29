@@ -66,16 +66,20 @@ function validateCustomer(customer: CustomerDetails) {
   };
 }
 
-export async function handleCreateOrder(body: CreateOrderRequestBody, reqUrl: string) {
+export async function handleCreateOrder(
+  body: CreateOrderRequestBody,
+  reqUrl: string,
+  env?: any,
+) {
   // 1. Validate Customer Information
   const validatedCustomer = validateCustomer(body.customer);
 
   // 2. Authoritative Price & Item Calculation (Never trusts client prices or totals)
-  const calculation = await verifyCartAndCalculateTotals(body.items);
+  const calculation = await verifyCartAndCalculateTotals(body.items, env);
 
   // 3. Generate Human-Friendly Order ID
   const orderId = generateHumanOrderId();
-  const db = getDb();
+  const db = getDb(env);
   const orderDocRef = db.collection("orders").doc(orderId);
 
   const baseUrl = process.env["APP_URL"] || new URL(reqUrl).origin;

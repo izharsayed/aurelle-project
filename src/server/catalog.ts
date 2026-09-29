@@ -13,9 +13,13 @@ const seedProductMap = new Map<string, Product>(seedProducts.map((p) => [p.id, p
 /**
  * Retrieves an authoritative product either from Firestore or seed catalog
  */
-export async function getAuthoritativeProduct(productId: string): Promise<Product | null> {
+export async function getAuthoritativeProduct(
+  productId: string,
+  env?: any,
+): Promise<Product | null> {
+  // 1. Check live Cloud Firestore
   try {
-    const db = getDb();
+    const db = getDb(env);
     const docRef = db.collection("products").doc(productId);
     const docSnap = await docRef.get();
 
@@ -23,10 +27,22 @@ export async function getAuthoritativeProduct(productId: string): Promise<Produc
       return docSnap.data() as Product;
     }
   } catch (err) {
-    console.warn("⚠️ [Catalog] Firestore product read fallback to seed:", err);
+    console.warn("⚠️ [Catalog] Firestore product read fallback to cloud/seed:", err);
   }
 
-  // Fallback to local verified seed catalog
+  // 2. Check Supabase Storage live catalog
+  try {
+    const { handleGetCatalogProducts } = await import("./api/catalog-api");
+    const cloudRes = await handleGetCatalogProducts(env);
+    if (cloudRes?.body?.products && Array.isArray(cloudRes.body.products)) {
+      const match = cloudRes.body.products.find((p: Product) => p.id === productId);
+      if (match) return match;
+    }
+  } catch (err) {
+    console.warn("⚠️ [Catalog] Cloud catalog lookup fallback to seed:", err);
+  }
+
+  // 3. Fallback to local verified seed catalog
   return seedProductMap.get(productId) || null;
 }
 
@@ -51,6 +67,7 @@ export interface VerifiedCartCalculation {
  */
 export async function verifyCartAndCalculateTotals(
   clientItems: ClientCartItemInput[],
+  env?: any,
 ): Promise<VerifiedCartCalculation> {
   if (!Array.isArray(clientItems) || clientItems.length === 0) {
     throw new Error("Shopping cart is empty.");
@@ -69,7 +86,7 @@ export async function verifyCartAndCalculateTotals(
       throw new Error(`Maximum 10 units allowed per item for luxury safety`);
     }
 
-    const authoritativeProduct = await getAuthoritativeProduct(item.productId);
+    const authoritativeProduct = await getAuthoritativeProduct(item.productId, env);
     if (!authoritativeProduct) {
       throw new Error(`Product "${item.productId}" is not recognized in catalog.`);
     }
