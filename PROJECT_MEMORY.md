@@ -238,12 +238,13 @@ aurelle-project/
   - Authoritative catalog synchronization (`/api/catalog/products`)
   - Order transactions and fulfillment status
   - Cashfree payment webhooks
-- **Media Storage**: **Supabase Storage**
+- **Media & Catalog Storage**: **Supabase Storage**
   - Project URL: `https://zmwycmlxdgqghzxidcfw.supabase.co`
   - Bucket: `products` (Public: ON)
   - Endpoint: `POST /api/upload` handles multipart file uploads directly to Supabase Storage via REST API with bearer authentication and auto `x-upsert`.
   - Public URLs: `https://zmwycmlxdgqghzxidcfw.supabase.co/storage/v1/object/public/products/<filename>`
   - Image Picker: `src/components/admin/ImagePicker.tsx` seamlessly uploads selected product photos to Supabase and attaches public URLs to new/updated jewelry items.
+  - Multi-Device Catalog Sync: `catalog.json` stored in Supabase Storage (`products/catalog.json`) ensures all phones, laptops, and devices across the world immediately see newly uploaded products in real-time.
 
 ---
 
