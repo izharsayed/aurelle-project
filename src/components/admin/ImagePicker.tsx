@@ -44,7 +44,9 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
       return new Promise<string>((resolve, reject) => {
         // Basic size check: warn if image > 2MB
         if (file.size > 3 * 1024 * 1024) {
-          toast.warning(`"${file.name}" is large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Compressing...`);
+          toast.warning(
+            `"${file.name}" is large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Compressing...`,
+          );
         }
 
         const reader = new FileReader();
@@ -105,7 +107,11 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
     e.preventDefault();
     const trimmed = urlInput.trim();
     if (!trimmed) return;
-    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://") && !trimmed.startsWith("data:")) {
+    if (
+      !trimmed.startsWith("http://") &&
+      !trimmed.startsWith("https://") &&
+      !trimmed.startsWith("data:")
+    ) {
       toast.error("Please enter a valid web URL (e.g. https://...)");
       return;
     }

@@ -26,9 +26,12 @@ function CartPage() {
         <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-muted/50 text-muted-foreground">
           <ShoppingBag className="size-8 text-gold" strokeWidth={1.25} />
         </div>
-        <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-3">Your Shopping Bag is Empty</h1>
+        <h1 className="font-serif text-3xl sm:text-4xl text-foreground mb-3">
+          Your Shopping Bag is Empty
+        </h1>
         <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
-          Explore our signature collections of 18K gold-plated anti-tarnish jewelry and Jaipur heirloom bridal sets.
+          Explore our signature collections of 18K gold-plated anti-tarnish jewelry and Jaipur
+          heirloom bridal sets.
         </p>
         <Button variant="gold" size="brand" asChild>
           <Link to="/shop">Discover Collection</Link>
@@ -41,7 +44,9 @@ function CartPage() {
     <div className="container mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between border-b border-border/80 pb-6">
         <div>
-          <h1 className="font-serif text-3xl sm:text-4xl text-foreground font-light">Shopping Bag</h1>
+          <h1 className="font-serif text-3xl sm:text-4xl text-foreground font-light">
+            Shopping Bag
+          </h1>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
             {cartCount} {cartCount === 1 ? "Piece" : "Pieces"} Selected
           </p>
@@ -84,7 +89,9 @@ function CartPage() {
                         <p className="text-xs text-muted-foreground mt-0.5">
                           SKU: <span className="font-mono">{item.sku}</span>
                           {item.color && (
-                            <span className="ml-3 uppercase tracking-wider">Finish: {item.color}</span>
+                            <span className="ml-3 uppercase tracking-wider">
+                              Finish: {item.color}
+                            </span>
                           )}
                         </p>
                       </div>
@@ -149,7 +156,12 @@ function CartPage() {
             <div className="rounded-xs bg-muted/40 p-3 text-xs text-muted-foreground">
               {amountToFreeShipping > 0 ? (
                 <p>
-                  Add <strong className="text-gold font-semibold">{formatPrice(amountToFreeShipping)}</strong> more to unlock <strong className="text-foreground">complimentary insured shipping</strong>.
+                  Add{" "}
+                  <strong className="text-gold font-semibold">
+                    {formatPrice(amountToFreeShipping)}
+                  </strong>{" "}
+                  more to unlock{" "}
+                  <strong className="text-foreground">complimentary insured shipping</strong>.
                 </p>
               ) : (
                 <p className="text-emerald-700 dark:text-emerald-400 font-medium">

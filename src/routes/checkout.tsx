@@ -86,7 +86,8 @@ function CheckoutPage() {
     }
 
     const cleanPhone = customer.mobileNumber.replace(/\D/g, "");
-    const finalPhone = cleanPhone.length === 12 && cleanPhone.startsWith("91") ? cleanPhone.slice(2) : cleanPhone;
+    const finalPhone =
+      cleanPhone.length === 12 && cleanPhone.startsWith("91") ? cleanPhone.slice(2) : cleanPhone;
     if (!/^[6-9]\d{9}$/.test(finalPhone)) {
       errs.mobileNumber = "Enter a valid 10-digit Indian mobile number.";
     }
@@ -234,7 +235,6 @@ function CheckoutPage() {
           {/* LEFT: Customer & Shipping Details Form */}
           <div className="lg:col-span-7 space-y-8">
             <form id="checkout-form" onSubmit={handlePay} className="space-y-8">
-              
               {/* SECTION 1: Contact Information */}
               <div className="rounded-xs border border-border/80 bg-card p-6 shadow-xs space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/60 pb-3">
@@ -248,7 +248,10 @@ function CheckoutPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                   <div className="sm:col-span-2 space-y-1.5">
-                    <Label htmlFor="fullName" className="text-xs font-medium uppercase tracking-wider">
+                    <Label
+                      htmlFor="fullName"
+                      className="text-xs font-medium uppercase tracking-wider"
+                    >
                       Full Legal Name *
                     </Label>
                     <Input
@@ -265,7 +268,10 @@ function CheckoutPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="mobileNumber" className="text-xs font-medium uppercase tracking-wider">
+                    <Label
+                      htmlFor="mobileNumber"
+                      className="text-xs font-medium uppercase tracking-wider"
+                    >
                       Mobile Number (for delivery SMS) *
                     </Label>
                     <div className="relative">
@@ -326,7 +332,10 @@ function CheckoutPage() {
 
                 <div className="space-y-4 pt-1">
                   <div className="space-y-1.5">
-                    <Label htmlFor="address" className="text-xs font-medium uppercase tracking-wider">
+                    <Label
+                      htmlFor="address"
+                      className="text-xs font-medium uppercase tracking-wider"
+                    >
                       Street Address, Flat / House No., Landmark *
                     </Label>
                     <Input
@@ -344,7 +353,10 @@ function CheckoutPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="city" className="text-xs font-medium uppercase tracking-wider">
+                      <Label
+                        htmlFor="city"
+                        className="text-xs font-medium uppercase tracking-wider"
+                      >
                         City *
                       </Label>
                       <Input
@@ -361,7 +373,10 @@ function CheckoutPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="state" className="text-xs font-medium uppercase tracking-wider">
+                      <Label
+                        htmlFor="state"
+                        className="text-xs font-medium uppercase tracking-wider"
+                      >
                         State *
                       </Label>
                       <select
@@ -383,7 +398,10 @@ function CheckoutPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="pincode" className="text-xs font-medium uppercase tracking-wider">
+                      <Label
+                        htmlFor="pincode"
+                        className="text-xs font-medium uppercase tracking-wider"
+                      >
                         Postal Pincode *
                       </Label>
                       <Input
@@ -422,16 +440,14 @@ function CheckoutPage() {
                 <div className="rounded-xs border border-gold/40 bg-gold/5 p-4 flex items-start gap-3">
                   <CheckCircle2 className="size-5 text-gold shrink-0 mt-0.5" />
                   <div className="space-y-1 text-xs">
-                    <p className="font-semibold text-foreground">
-                      Cashfree Secure Online Payment
-                    </p>
+                    <p className="font-semibold text-foreground">Cashfree Secure Online Payment</p>
                     <p className="text-muted-foreground leading-relaxed">
-                      Instant verification via Google Pay, PhonePe, Paytm, all Indian UPI Apps, Credit/Debit Cards (Visa, Mastercard, RuPay), NetBanking, and EMI.
+                      Instant verification via Google Pay, PhonePe, Paytm, all Indian UPI Apps,
+                      Credit/Debit Cards (Visa, Mastercard, RuPay), NetBanking, and EMI.
                     </p>
                   </div>
                 </div>
               </div>
-
             </form>
           </div>
 
@@ -445,7 +461,10 @@ function CheckoutPage() {
               {/* Items Preview */}
               <div className="max-h-60 overflow-y-auto divide-y divide-border/40 pr-1 space-y-3">
                 {cart.map((item) => (
-                  <div key={`${item.productId}-${item.color}`} className="pt-3 first:pt-0 flex gap-3">
+                  <div
+                    key={`${item.productId}-${item.color}`}
+                    className="pt-3 first:pt-0 flex gap-3"
+                  >
                     <div className="size-14 shrink-0 overflow-hidden rounded-xs border border-border/60 bg-muted/20">
                       <img
                         src={item.image}
@@ -499,7 +518,11 @@ function CheckoutPage() {
                 className="w-full flex items-center justify-center gap-2 text-xs uppercase tracking-widest font-semibold cursor-pointer shadow-md active:scale-[0.99]"
               >
                 <Lock className="size-3.5" />
-                <span>{isSubmitting ? "Initiating Secure Gateway..." : `Pay ${formatPrice(grandTotal)} Securely`}</span>
+                <span>
+                  {isSubmitting
+                    ? "Initiating Secure Gateway..."
+                    : `Pay ${formatPrice(grandTotal)} Securely`}
+                </span>
               </Button>
 
               <div className="text-center space-y-1.5 pt-1">
@@ -507,10 +530,10 @@ function CheckoutPage() {
                   🔒 Encrypted Payment via Cashfree
                 </p>
                 <p className="text-[0.62rem] text-muted-foreground">
-                  By clicking Pay, you agree to Velora Fine Jewelry's care, dispatch, and return policies.
+                  By clicking Pay, you agree to Velora Fine Jewelry's care, dispatch, and return
+                  policies.
                 </p>
               </div>
-
             </div>
           </div>
         </div>

@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { ArrowUp, ChevronDown, LayoutGrid, Loader2, PackageSearch, Rows3, Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import {
+  ArrowUp,
+  ChevronDown,
+  LayoutGrid,
+  Loader2,
+  PackageSearch,
+  Rows3,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
 import { ProductFilters } from "./ProductFilters";
 import { ProductGrid } from "./ProductGrid";
 import { ProductGridSkeleton } from "./ProductSkeletons";
@@ -51,7 +61,8 @@ export function ProductBrowser({
   const results = useMemo(() => applyFilters(products, filters, sort), [products, filters, sort]);
   const current = results.slice(0, visibleCount);
   const hasMore = visibleCount < results.length;
-  const progressPercent = results.length > 0 ? Math.min(100, Math.round((current.length / results.length) * 100)) : 100;
+  const progressPercent =
+    results.length > 0 ? Math.min(100, Math.round((current.length / results.length) * 100)) : 100;
 
   const handleLoadMore = () => {
     setIsLoadingMore(true);
@@ -104,7 +115,11 @@ export function ProductBrowser({
             {/* Mobile Filters Drawer */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="line" size="sm" className="h-9 gap-1.5 px-3 lg:hidden text-xs font-medium shrink-0">
+                <Button
+                  variant="line"
+                  size="sm"
+                  className="h-9 gap-1.5 px-3 lg:hidden text-xs font-medium shrink-0"
+                >
                   <SlidersHorizontal aria-hidden className="size-3.5" strokeWidth={1.5} /> Filter
                 </Button>
               </SheetTrigger>
@@ -160,13 +175,18 @@ export function ProductBrowser({
               <ProductGrid products={current} layout={layout} />
 
               {/* Luxury Progress Bar & Load More Section */}
-              <div ref={loadMoreRef} className="mt-16 flex flex-col items-center justify-center space-y-4 border-t border-border pt-10">
+              <div
+                ref={loadMoreRef}
+                className="mt-16 flex flex-col items-center justify-center space-y-4 border-t border-border pt-10"
+              >
                 {/* Piece counter text */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Sparkles className="size-3.5 text-gold" />
                   <span>
-                    Showing <strong className="text-foreground font-semibold">{current.length}</strong> of{" "}
-                    <strong className="text-foreground font-semibold">{results.length}</strong> pieces
+                    Showing{" "}
+                    <strong className="text-foreground font-semibold">{current.length}</strong> of{" "}
+                    <strong className="text-foreground font-semibold">{results.length}</strong>{" "}
+                    pieces
                   </span>
                 </div>
 

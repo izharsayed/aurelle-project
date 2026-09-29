@@ -120,7 +120,9 @@ export function ProductCard({ product, layout = "grid", priority = false }: Prod
       </div>
 
       {/* Content & Details */}
-      <div className={cn("flex flex-1 flex-col justify-between", isList ? "gap-3" : "pt-2.5 sm:pt-3")}>
+      <div
+        className={cn("flex flex-1 flex-col justify-between", isList ? "gap-3" : "pt-2.5 sm:pt-3")}
+      >
         <div>
           <div className="flex items-start justify-between gap-2">
             <h3 className="min-w-0 font-serif text-sm sm:text-base lg:text-lg leading-snug line-clamp-2 min-h-[2.4rem] sm:min-h-0">

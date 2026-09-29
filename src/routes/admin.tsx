@@ -36,7 +36,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -330,7 +336,8 @@ function AdminPage() {
                 />
                 {pinError && <p className="text-xs font-medium text-destructive">{pinError}</p>}
                 <p className="text-xs text-muted-foreground text-center">
-                  Default passcode: <span className="font-mono font-medium text-foreground">1234</span>
+                  Default passcode:{" "}
+                  <span className="font-mono font-medium text-foreground">1234</span>
                 </p>
               </div>
 
@@ -450,7 +457,9 @@ function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-semibold">
-                    {products.length ? formatPrice(Math.round(totalCatalogValue / products.length)) : "₹0"}
+                    {products.length
+                      ? formatPrice(Math.round(totalCatalogValue / products.length))
+                      : "₹0"}
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">Catalog average value</p>
                 </CardContent>
@@ -501,8 +510,8 @@ function AdminPage() {
               <CardContent>
                 {inquiries.length === 0 ? (
                   <div className="py-8 text-center text-sm text-muted-foreground">
-                    No customer inquiries logged yet. When a visitor clicks "Order on WhatsApp",
-                    it will appear here automatically.
+                    No customer inquiries logged yet. When a visitor clicks "Order on WhatsApp", it
+                    will appear here automatically.
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -516,7 +525,8 @@ function AdminPage() {
                             {inq.productName}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            SKU: {inq.productSku} • Qty: {inq.quantity} • Finish: {inq.finish || "Standard"}
+                            SKU: {inq.productSku} • Qty: {inq.quantity} • Finish:{" "}
+                            {inq.finish || "Standard"}
                           </p>
                         </div>
                         <div className="flex items-center gap-3 sm:text-right">
@@ -563,8 +573,8 @@ function AdminPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Reset Catalog to Initial Seed Data?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will revert all custom products, pricing changes, and stock toggles back
-                            to the initial Velora catalog.
+                            This will revert all custom products, pricing changes, and stock toggles
+                            back to the initial Velora catalog.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -649,7 +659,10 @@ function AdminPage() {
                     <TableBody>
                       {filteredProducts.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">
+                          <TableCell
+                            colSpan={8}
+                            className="py-8 text-center text-sm text-muted-foreground"
+                          >
                             No products match your current filters.
                           </TableCell>
                         </TableRow>
@@ -758,7 +771,8 @@ function AdminPage() {
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>Delete Product?</AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        Are you sure you want to remove "{prod.name}" ({prod.sku}) from the catalog?
+                                        Are you sure you want to remove "{prod.name}" ({prod.sku})
+                                        from the catalog?
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -829,7 +843,10 @@ function AdminPage() {
                     <TableBody>
                       {inquiries.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
+                          <TableCell
+                            colSpan={7}
+                            className="py-8 text-center text-sm text-muted-foreground"
+                          >
                             No inquiries recorded yet.
                           </TableCell>
                         </TableRow>
@@ -890,7 +907,8 @@ function AdminPage() {
                     Customer Orders (Cashfree & Firebase)
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Live customer orders with server-verified Cashfree payment status and fulfillment tracking.
+                    Live customer orders with server-verified Cashfree payment status and
+                    fulfillment tracking.
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -954,8 +972,13 @@ function AdminPage() {
                     <TableBody>
                       {filteredOrders.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
-                            {ordersLoading ? "Loading orders from database..." : "No matching customer orders found."}
+                          <TableCell
+                            colSpan={8}
+                            className="py-10 text-center text-sm text-muted-foreground"
+                          >
+                            {ordersLoading
+                              ? "Loading orders from database..."
+                              : "No matching customer orders found."}
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -965,8 +988,12 @@ function AdminPage() {
                               {ord.orderId}
                             </TableCell>
                             <TableCell className="text-xs">
-                              <span className="font-medium text-foreground block">{ord.customer.fullName}</span>
-                              <span className="text-muted-foreground text-[11px]">+91 {ord.customer.mobileNumber}</span>
+                              <span className="font-medium text-foreground block">
+                                {ord.customer.fullName}
+                              </span>
+                              <span className="text-muted-foreground text-[11px]">
+                                +91 {ord.customer.mobileNumber}
+                              </span>
                             </TableCell>
                             <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                               {new Date(ord.createdAt).toLocaleDateString("en-IN", {
@@ -988,8 +1015,8 @@ function AdminPage() {
                                   ord.payment.status === "SUCCESS" || ord.status === "PAID"
                                     ? "default"
                                     : ord.payment.status === "FAILED"
-                                    ? "destructive"
-                                    : "secondary"
+                                      ? "destructive"
+                                      : "secondary"
                                 }
                                 className="text-[10px] tracking-wider uppercase font-semibold"
                               >
@@ -999,7 +1026,9 @@ function AdminPage() {
                             <TableCell>
                               <Select
                                 value={ord.status}
-                                onValueChange={(val: OrderStatus) => handleUpdateStatus(ord.orderId, val)}
+                                onValueChange={(val: OrderStatus) =>
+                                  handleUpdateStatus(ord.orderId, val)
+                                }
                               >
                                 <SelectTrigger className="h-7 text-[11px] w-32">
                                   <SelectValue />
@@ -1130,14 +1159,13 @@ function AdminPage() {
       />
 
       {/* Add Product Modal */}
-      <AddProductDialog
-        open={isAddOpen}
-        onOpenChange={setIsAddOpen}
-        onAdd={addProduct}
-      />
+      <AddProductDialog open={isAddOpen} onOpenChange={setIsAddOpen} onAdd={addProduct} />
 
       {/* Order Details Dialog */}
-      <Dialog open={Boolean(selectedOrder)} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+      <Dialog
+        open={Boolean(selectedOrder)}
+        onOpenChange={(open) => !open && setSelectedOrder(null)}
+      >
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           {selectedOrder && (
             <div className="space-y-6">
@@ -1172,7 +1200,9 @@ function AdminPage() {
                   </p>
                   <p className="font-medium text-foreground">{selectedOrder.customer.fullName}</p>
                   <p className="text-muted-foreground">{selectedOrder.customer.email}</p>
-                  <p className="font-mono text-muted-foreground">+91 {selectedOrder.customer.mobileNumber}</p>
+                  <p className="font-mono text-muted-foreground">
+                    +91 {selectedOrder.customer.mobileNumber}
+                  </p>
                 </div>
 
                 <div className="space-y-1">
@@ -1181,7 +1211,8 @@ function AdminPage() {
                   </p>
                   <p className="text-muted-foreground">{selectedOrder.customer.address}</p>
                   <p className="text-muted-foreground">
-                    {selectedOrder.customer.city}, {selectedOrder.customer.state} — {selectedOrder.customer.pincode}
+                    {selectedOrder.customer.city}, {selectedOrder.customer.state} —{" "}
+                    {selectedOrder.customer.pincode}
                   </p>
                 </div>
               </div>
@@ -1191,15 +1222,23 @@ function AdminPage() {
                 <h4 className="font-serif text-base text-foreground">Ordered Pieces</h4>
                 <div className="divide-y divide-border/60 border-y border-border/60">
                   {selectedOrder.items.map((item) => (
-                    <div key={item.productId} className="py-2.5 flex items-center justify-between text-xs">
+                    <div
+                      key={item.productId}
+                      className="py-2.5 flex items-center justify-between text-xs"
+                    >
                       <div className="flex items-center gap-3">
                         {item.image && (
-                          <img src={item.image} alt={item.name} className="size-10 object-cover rounded-xs" />
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="size-10 object-cover rounded-xs"
+                          />
                         )}
                         <div>
                           <p className="font-medium text-foreground">{item.name}</p>
                           <p className="text-muted-foreground text-[11px]">
-                            Qty: {item.quantity} {item.color ? `• Finish: ${item.color}` : ""} • SKU: {item.sku}
+                            Qty: {item.quantity} {item.color ? `• Finish: ${item.color}` : ""} •
+                            SKU: {item.sku}
                           </p>
                         </div>
                       </div>
@@ -1215,7 +1254,11 @@ function AdminPage() {
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Shipping</span>
-                    <span>{selectedOrder.shippingAmount === 0 ? "Complimentary" : formatPrice(selectedOrder.shippingAmount)}</span>
+                    <span>
+                      {selectedOrder.shippingAmount === 0
+                        ? "Complimentary"
+                        : formatPrice(selectedOrder.shippingAmount)}
+                    </span>
                   </div>
                   <div className="flex justify-between font-semibold text-sm pt-1 border-t border-border/60">
                     <span>Total</span>
@@ -1233,29 +1276,43 @@ function AdminPage() {
                 <div className="grid grid-cols-2 gap-2 text-muted-foreground text-[11px]">
                   <div>
                     <span>Gateway: </span>
-                    <strong className="text-foreground capitalize">{selectedOrder.payment.gateway}</strong>
+                    <strong className="text-foreground capitalize">
+                      {selectedOrder.payment.gateway}
+                    </strong>
                   </div>
                   <div>
                     <span>Payment ID: </span>
-                    <span className="font-mono text-foreground">{selectedOrder.payment.gatewayPaymentId || "N/A"}</span>
+                    <span className="font-mono text-foreground">
+                      {selectedOrder.payment.gatewayPaymentId || "N/A"}
+                    </span>
                   </div>
                   <div>
                     <span>Payment Method: </span>
-                    <span className="text-foreground">{selectedOrder.payment.method || "Online"}</span>
+                    <span className="text-foreground">
+                      {selectedOrder.payment.method || "Online"}
+                    </span>
                   </div>
                   <div>
                     <span>Paid At: </span>
-                    <span className="text-foreground">{selectedOrder.payment.paidAt ? new Date(selectedOrder.payment.paidAt).toLocaleString("en-IN") : "Awaiting"}</span>
+                    <span className="text-foreground">
+                      {selectedOrder.payment.paidAt
+                        ? new Date(selectedOrder.payment.paidAt).toLocaleString("en-IN")
+                        : "Awaiting"}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Fulfillment Status Updater */}
               <div className="flex items-center justify-between gap-4 pt-2 border-t border-border/80">
-                <span className="text-xs font-medium text-foreground">Update Fulfillment State:</span>
+                <span className="text-xs font-medium text-foreground">
+                  Update Fulfillment State:
+                </span>
                 <Select
                   value={selectedOrder.status}
-                  onValueChange={(val: OrderStatus) => handleUpdateStatus(selectedOrder.orderId, val)}
+                  onValueChange={(val: OrderStatus) =>
+                    handleUpdateStatus(selectedOrder.orderId, val)
+                  }
                 >
                   <SelectTrigger className="w-44 text-xs">
                     <SelectValue />
@@ -1269,7 +1326,6 @@ function AdminPage() {
                   </SelectContent>
                 </Select>
               </div>
-
             </div>
           )}
         </DialogContent>

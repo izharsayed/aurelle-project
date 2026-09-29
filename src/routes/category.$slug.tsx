@@ -35,7 +35,6 @@ function CategoryPage() {
   const { products } = useStore();
   const items = products.filter((p) => p.category === category.slug);
 
-
   return (
     <div>
       <section className="relative isolate overflow-hidden bg-sand">

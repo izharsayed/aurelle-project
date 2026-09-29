@@ -25,7 +25,6 @@ function WishlistPage() {
   const { wishlist, clearWishlist, products } = useStore();
   const saved = products.filter((p) => wishlist.includes(p.id));
 
-
   return (
     <div className="mx-auto max-w-[90rem] px-5 py-10 sm:px-8 sm:py-14">
       <Breadcrumbs items={[{ label: "Wishlist" }]} />

@@ -159,7 +159,9 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
       createdAt: new Date().toISOString(),
     });
 
-    console.log(`✉️ [Email] Queued confirmation email in Firestore 'mail' collection for ${order.customer.email}`);
+    console.log(
+      `✉️ [Email] Queued confirmation email in Firestore 'mail' collection for ${order.customer.email}`,
+    );
     return true;
   } catch (err) {
     console.warn("⚠️ [Email] Could not queue email via Firestore 'mail' collection:", err);

@@ -26,7 +26,6 @@ function NewArrivalsPage() {
   const { products } = useStore();
   const items = products.filter((p) => p.newArrival);
 
-
   return (
     <div className="mx-auto max-w-[90rem] px-5 py-10 sm:px-8 sm:py-14">
       <Breadcrumbs items={[{ label: "New Arrivals" }]} />

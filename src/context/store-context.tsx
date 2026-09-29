@@ -115,7 +115,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setThemeState(savedTheme);
         if (savedTheme === "dark") document.documentElement.classList.add("dark");
         else document.documentElement.classList.remove("dark");
-      } else if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      } else if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
         setThemeState("dark");
         document.documentElement.classList.add("dark");
       }
@@ -256,50 +259,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const clearWishlist = useCallback(() => setWishlist([]), []);
 
   // Catalog actions
-  const updateProduct = useCallback(
-    (id: string, updates: Partial<Product>) => {
-      setProducts((prev) => {
-        const updated = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
-        try {
-          window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
-        } catch {
-          /* ignore */
-        }
-        return updated;
-      });
-    },
-    [],
-  );
+  const updateProduct = useCallback((id: string, updates: Partial<Product>) => {
+    setProducts((prev) => {
+      const updated = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
+      try {
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+      } catch {
+        /* ignore */
+      }
+      return updated;
+    });
+  }, []);
 
-  const addProduct = useCallback(
-    (newProd: Product) => {
-      setProducts((prev) => {
-        const updated = [newProd, ...prev];
-        try {
-          window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
-        } catch {
-          /* ignore */
-        }
-        return updated;
-      });
-    },
-    [],
-  );
+  const addProduct = useCallback((newProd: Product) => {
+    setProducts((prev) => {
+      const updated = [newProd, ...prev];
+      try {
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+      } catch {
+        /* ignore */
+      }
+      return updated;
+    });
+  }, []);
 
-  const deleteProduct = useCallback(
-    (id: string) => {
-      setProducts((prev) => {
-        const updated = prev.filter((p) => p.id !== id);
-        try {
-          window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
-        } catch {
-          /* ignore */
-        }
-        return updated;
-      });
-    },
-    [],
-  );
+  const deleteProduct = useCallback((id: string) => {
+    setProducts((prev) => {
+      const updated = prev.filter((p) => p.id !== id);
+      try {
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+      } catch {
+        /* ignore */
+      }
+      return updated;
+    });
+  }, []);
 
   const resetCatalog = useCallback(() => {
     setProducts(defaultProducts);
@@ -503,5 +497,3 @@ export function useTheme() {
   const { theme, toggleTheme, setTheme } = useStore();
   return { theme, toggleTheme, setTheme };
 }
-
-

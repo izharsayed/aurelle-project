@@ -686,21 +686,50 @@ export const products: Product[] = [
   }),
 ];
 
-/* ---------- query helpers (swap-in point for Firestore queries) ---------- */
+/* ---------- query helpers (swap-in point for Firestore / dynamic queries) ---------- */
 
-export const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
+export const getAllProducts = (): Product[] => {
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem("aurelle.catalog.v1");
+      if (raw) {
+        const parsed = JSON.parse(raw) as Product[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {
+      /* ignore storage read error */
+    }
+  }
+  return products;
+};
+
+export const getProductBySlug = (slug: string) => {
+  const all = getAllProducts();
+  return all.find((p) => p.slug === slug || p.id === slug);
+};
 
 export const getProductsByCategory = (category: CategorySlug) =>
-  products.filter((p) => p.category === category);
+  getAllProducts().filter((p) => p.category === category);
 
-export const getNewArrivals = (limit = 8) => products.filter((p) => p.newArrival).slice(0, limit);
+export const getNewArrivals = (limit = 8) =>
+  getAllProducts()
+    .filter((p) => p.newArrival)
+    .slice(0, limit);
 
-export const getBestSellers = (limit = 8) => products.filter((p) => p.bestSeller).slice(0, limit);
+export const getBestSellers = (limit = 8) =>
+  getAllProducts()
+    .filter((p) => p.bestSeller)
+    .slice(0, limit);
 
-export const getFeatured = (limit = 8) => products.filter((p) => p.featured).slice(0, limit);
+export const getFeatured = (limit = 8) =>
+  getAllProducts()
+    .filter((p) => p.featured)
+    .slice(0, limit);
 
 export const getRelatedProducts = (product: Product, limit = 4) =>
-  products
+  getAllProducts()
     .filter((p) => p.id !== product.id)
     .sort((a, b) => {
       const score = (p: typeof a) =>
@@ -712,7 +741,7 @@ export const getRelatedProducts = (product: Product, limit = 4) =>
 export const searchProducts = (query: string, limit = 8) => {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return products
+  return getAllProducts()
     .filter((p) =>
       [p.name, p.description, p.category, p.collection, ...p.tags]
         .join(" ")

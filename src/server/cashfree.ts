@@ -31,9 +31,7 @@ function getCashfreeConfig() {
   const apiVersion = process.env["CASHFREE_API_VERSION"] || "2023-08-01";
 
   const baseUrl =
-    env === "production"
-      ? "https://api.cashfree.com/pg"
-      : "https://sandbox.cashfree.com/pg";
+    env === "production" ? "https://api.cashfree.com/pg" : "https://sandbox.cashfree.com/pg";
 
   const isConfigured = Boolean(appId && secretKey);
 
@@ -96,7 +94,10 @@ export async function createCashfreeOrder(
 
   if (!response.ok) {
     const errorMsg =
-      responseData?.["message"] || responseData?.["error"] || response.statusText || "Cashfree order creation failed";
+      responseData?.["message"] ||
+      responseData?.["error"] ||
+      response.statusText ||
+      "Cashfree order creation failed";
     console.error("❌ [Cashfree Error]", response.status, responseData);
     throw new Error(`Cashfree Error: ${errorMsg}`);
   }
@@ -144,14 +145,17 @@ export async function getCashfreePayments(orderId: string): Promise<any[]> {
   if (!config.isConfigured) return [];
 
   try {
-    const response = await fetch(`${config.baseUrl}/orders/${encodeURIComponent(orderId)}/payments`, {
-      method: "GET",
-      headers: {
-        "x-client-id": config.appId,
-        "x-client-secret": config.secretKey,
-        "x-api-version": config.apiVersion,
+    const response = await fetch(
+      `${config.baseUrl}/orders/${encodeURIComponent(orderId)}/payments`,
+      {
+        method: "GET",
+        headers: {
+          "x-client-id": config.appId,
+          "x-client-secret": config.secretKey,
+          "x-api-version": config.apiVersion,
+        },
       },
-    });
+    );
 
     if (!response.ok) return [];
     return (await response.json()) as any[];

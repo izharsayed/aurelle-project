@@ -8,9 +8,7 @@ export const STANDARD_SHIPPING_FEE = 150;
 /**
  * In-memory map of seed products for rapid authoritative lookup
  */
-const seedProductMap = new Map<string, Product>(
-  seedProducts.map((p) => [p.id, p]),
-);
+const seedProductMap = new Map<string, Product>(seedProducts.map((p) => [p.id, p]));
 
 /**
  * Retrieves an authoritative product either from Firestore or seed catalog

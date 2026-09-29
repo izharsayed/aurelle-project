@@ -23,7 +23,10 @@ function validateCustomer(customer: CustomerDetails) {
 
   // 10-digit Indian mobile number
   const cleanedPhone = customer.mobileNumber ? customer.mobileNumber.replace(/\D/g, "") : "";
-  const finalPhone = cleanedPhone.length === 12 && cleanedPhone.startsWith("91") ? cleanedPhone.slice(2) : cleanedPhone;
+  const finalPhone =
+    cleanedPhone.length === 12 && cleanedPhone.startsWith("91")
+      ? cleanedPhone.slice(2)
+      : cleanedPhone;
   if (!/^[6-9]\d{9}$/.test(finalPhone)) {
     throw new Error("Please enter a valid 10-digit Indian mobile number.");
   }

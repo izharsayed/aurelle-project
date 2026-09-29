@@ -61,7 +61,6 @@ function HomePage() {
   const newArrivals = products.filter((p) => p.newArrival).slice(0, 8);
   const bestSellers = products.filter((p) => p.bestSeller).slice(0, 4);
 
-
   return (
     <>
       {/* Hero */}

@@ -49,8 +49,13 @@ export async function handleCashfreeWebhook(
 
   // 2. Idempotency Safeguard:
   // If order is already PAID, do not re-process or re-send emails
-  if (existingOrder.status === "PAID" && (eventType === "PAYMENT_SUCCESS_WEBHOOK" || paymentData.payment_status === "SUCCESS")) {
-    console.log(`ℹ️ [Webhook] Order ${orderId} is already confirmed as PAID. Skipping redundant webhook.`);
+  if (
+    existingOrder.status === "PAID" &&
+    (eventType === "PAYMENT_SUCCESS_WEBHOOK" || paymentData.payment_status === "SUCCESS")
+  ) {
+    console.log(
+      `ℹ️ [Webhook] Order ${orderId} is already confirmed as PAID. Skipping redundant webhook.`,
+    );
     return { status: 200, body: { status: "already_processed", orderId } };
   }
 
@@ -84,7 +89,10 @@ export async function handleCashfreeWebhook(
         ...existingOrder.payment,
         status: "SUCCESS",
         gatewayPaymentId: cfPaymentId,
-        method: typeof paymentData.payment_method === "object" ? JSON.stringify(paymentData.payment_method) : String(paymentData.payment_method || "UPI/Card"),
+        method:
+          typeof paymentData.payment_method === "object"
+            ? JSON.stringify(paymentData.payment_method)
+            : String(paymentData.payment_method || "UPI/Card"),
         paidAt: paymentData.payment_time || new Date().toISOString(),
       },
       updatedAt: new Date().toISOString(),

@@ -143,7 +143,6 @@ function OrderStatusPage() {
     <div className="min-h-screen bg-sand/30 py-12 sm:py-16">
       <div className="container mx-auto max-w-3xl px-4 sm:px-6">
         <div className="rounded-xs border border-border/80 bg-card p-6 sm:p-10 shadow-sm space-y-8">
-          
           {/* HEADER STATUS */}
           {isPaid ? (
             <div className="text-center space-y-3 border-b border-border/60 pb-8">
@@ -157,12 +156,17 @@ function OrderStatusPage() {
                 Thank you for your order, {order.customerName}!
               </h1>
               <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Your order <strong className="font-mono text-foreground font-medium">{order.orderId}</strong> has been successfully placed and our Jaipur artisans are crafting your heirloom box.
+                Your order{" "}
+                <strong className="font-mono text-foreground font-medium">{order.orderId}</strong>{" "}
+                has been successfully placed and our Jaipur artisans are crafting your heirloom box.
               </p>
 
               <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-1.5 text-xs text-muted-foreground mt-2">
                 <Mail className="size-3.5 text-gold" />
-                <span>Confirmation email queued to <strong className="text-foreground">{order.customerEmail}</strong></span>
+                <span>
+                  Confirmation email queued to{" "}
+                  <strong className="text-foreground">{order.customerEmail}</strong>
+                </span>
               </div>
             </div>
           ) : isFailed ? (
@@ -217,11 +221,15 @@ function OrderStatusPage() {
           {/* ORDER DETAILS SUMMARY */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs border-b border-border/60 pb-8">
             <div className="space-y-1">
-              <span className="text-muted-foreground uppercase tracking-wider block">Order Reference</span>
+              <span className="text-muted-foreground uppercase tracking-wider block">
+                Order Reference
+              </span>
               <p className="font-mono text-sm font-semibold text-foreground">{order.orderId}</p>
             </div>
             <div className="space-y-1 sm:text-right">
-              <span className="text-muted-foreground uppercase tracking-wider block">Total Amount</span>
+              <span className="text-muted-foreground uppercase tracking-wider block">
+                Total Amount
+              </span>
               <p className="text-sm font-semibold text-gold">{formatPrice(order.totalAmount)}</p>
             </div>
           </div>
@@ -237,7 +245,11 @@ function OrderStatusPage() {
                   <div className="flex items-center gap-3">
                     {item.image && (
                       <div className="size-12 overflow-hidden rounded-xs border border-border/60 bg-muted/20">
-                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                     )}
                     <div>
@@ -261,7 +273,9 @@ function OrderStatusPage() {
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Insured Shipping</span>
-                <span>{order.shippingAmount === 0 ? "Complimentary" : formatPrice(order.shippingAmount)}</span>
+                <span>
+                  {order.shippingAmount === 0 ? "Complimentary" : formatPrice(order.shippingAmount)}
+                </span>
               </div>
               <div className="flex justify-between text-sm font-semibold text-foreground pt-2">
                 <span className="font-serif">Total Paid</span>
@@ -303,7 +317,6 @@ function OrderStatusPage() {
               <ArrowRight className="size-3" />
             </Link>
           </div>
-
         </div>
       </div>
     </div>

@@ -168,7 +168,7 @@ async function getGoogleAccessToken(clientEmail: string, privateKeyPem: string):
       scope: "https://www.googleapis.com/auth/datastore",
       iat: now,
       exp: now + 3600,
-    })
+    }),
   );
 
   const unsignedToken = `${header}.${payload}`;
@@ -186,13 +186,13 @@ async function getGoogleAccessToken(clientEmail: string, privateKeyPem: string):
     binaryDer,
     { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
 
   const sigBytes = await crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",
     cryptoKey,
-    new TextEncoder().encode(unsignedToken)
+    new TextEncoder().encode(unsignedToken),
   );
 
   // Convert signature Uint8Array to base64url
@@ -337,7 +337,9 @@ function createRestFirestore(projectId: string, clientEmail: string, privateKey:
               if (!res.ok) {
                 throw new Error(`Firestore LIST error (${res.status}): ${await res.text()}`);
               }
-              const json = (await res.json()) as { documents?: Array<{ name: string; fields?: Record<string, any> }> };
+              const json = (await res.json()) as {
+                documents?: Array<{ name: string; fields?: Record<string, any> }>;
+              };
               const docs = (json.documents || []).map((doc) => {
                 const docId = doc.name.split("/").pop() || "";
                 return {
@@ -357,7 +359,9 @@ function createRestFirestore(projectId: string, clientEmail: string, privateKey:
             if (!res.ok) {
               throw new Error(`Firestore WHERE query error (${res.status}): ${await res.text()}`);
             }
-            const json = (await res.json()) as { documents?: Array<{ name: string; fields?: Record<string, any> }> };
+            const json = (await res.json()) as {
+              documents?: Array<{ name: string; fields?: Record<string, any> }>;
+            };
             const docs = (json.documents || []).map((doc) => {
               const docId = doc.name.split("/").pop() || "";
               return {
@@ -375,7 +379,9 @@ function createRestFirestore(projectId: string, clientEmail: string, privateKey:
           if (!res.ok) {
             throw new Error(`Firestore LIST error (${res.status}): ${await res.text()}`);
           }
-          const json = (await res.json()) as { documents?: Array<{ name: string; fields?: Record<string, any> }> };
+          const json = (await res.json()) as {
+            documents?: Array<{ name: string; fields?: Record<string, any> }>;
+          };
           const docs = (json.documents || []).map((doc) => {
             const docId = doc.name.split("/").pop() || "";
             return {
@@ -412,7 +418,10 @@ export function initFirebase() {
       console.log("🔥 [Firebase] Initialized Cloud Firestore REST client.");
       return { db: activeDb, isMock: false };
     } catch (err) {
-      console.warn("⚠️ [Firebase] Failed to initialize Firestore REST client, falling back to mock:", err);
+      console.warn(
+        "⚠️ [Firebase] Failed to initialize Firestore REST client, falling back to mock:",
+        err,
+      );
     }
   }
 

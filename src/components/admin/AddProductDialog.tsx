@@ -83,7 +83,8 @@ export function AddProductDialog({ open, onOpenChange, onAdd }: AddProductDialog
 
     const generatedId = `p-custom-${Date.now()}`;
     const generatedSku =
-      sku.trim() || `AUR-${category.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+      sku.trim() ||
+      `AUR-${category.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
 
     const tags = tagsInput
       .split(",")
@@ -146,7 +147,8 @@ export function AddProductDialog({ open, onOpenChange, onAdd }: AddProductDialog
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl">Add New Jewelry Piece</DialogTitle>
           <DialogDescription>
-            Publish a new piece to the Aurelle catalog with your photos, pricing, and showcase flags.
+            Publish a new piece to the Aurelle catalog with your photos, pricing, and showcase
+            flags.
           </DialogDescription>
         </DialogHeader>
 

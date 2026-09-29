@@ -9,15 +9,8 @@ import { cn } from "@/lib/utils";
 const FREE_SHIPPING_THRESHOLD = 2500;
 
 export function CartDrawer() {
-  const {
-    cart,
-    cartOpen,
-    setCartOpen,
-    updateCartQuantity,
-    removeFromCart,
-    cartTotal,
-    cartCount,
-  } = useStore();
+  const { cart, cartOpen, setCartOpen, updateCartQuantity, removeFromCart, cartTotal, cartCount } =
+    useStore();
 
   // Close drawer on ESC
   useEffect(() => {
@@ -58,17 +51,12 @@ export function CartDrawer() {
 
       <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
         <div className="w-screen max-w-md border-l border-border/80 bg-background shadow-2xl flex flex-col transition-transform animate-in slide-in-from-right duration-300">
-          
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
             <div className="flex items-center gap-2">
               <ShoppingBag className="size-4.5 text-gold" strokeWidth={1.5} />
-              <h2 className="font-serif text-xl tracking-wide text-foreground">
-                Shopping Bag
-              </h2>
-              <span className="text-xs font-mono text-muted-foreground">
-                ({cartCount})
-              </span>
+              <h2 className="font-serif text-xl tracking-wide text-foreground">Shopping Bag</h2>
+              <span className="text-xs font-mono text-muted-foreground">({cartCount})</span>
             </div>
             <button
               type="button"
@@ -85,9 +73,17 @@ export function CartDrawer() {
             <div className="flex justify-between text-[0.7rem] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">
               <span>
                 {amountToFreeShipping > 0 ? (
-                  <>Add <strong className="text-gold font-semibold">{formatPrice(amountToFreeShipping)}</strong> for complimentary delivery</>
+                  <>
+                    Add{" "}
+                    <strong className="text-gold font-semibold">
+                      {formatPrice(amountToFreeShipping)}
+                    </strong>{" "}
+                    for complimentary delivery
+                  </>
                 ) : (
-                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold">✓ You qualify for complimentary luxury delivery</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                    ✓ You qualify for complimentary luxury delivery
+                  </span>
                 )}
               </span>
               <span>{progressPercent}%</span>
@@ -111,12 +107,7 @@ export function CartDrawer() {
                 <p className="text-xs text-muted-foreground max-w-xs mb-6">
                   Discover our handcrafted 18K anti-tarnish jewelry collections from Jaipur.
                 </p>
-                <Button
-                  variant="gold"
-                  size="sm"
-                  onClick={() => setCartOpen(false)}
-                  asChild
-                >
+                <Button variant="gold" size="sm" onClick={() => setCartOpen(false)} asChild>
                   <Link to="/shop">Explore Collection</Link>
                 </Button>
               </div>
@@ -257,7 +248,6 @@ export function CartDrawer() {
               </p>
             </div>
           )}
-
         </div>
       </div>
     </div>

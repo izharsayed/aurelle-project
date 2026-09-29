@@ -95,9 +95,9 @@ export async function handleApiRoute(request: Request): Promise<Response | null>
     });
   } catch (err: any) {
     console.error(`❌ [API Error] ${request.method} ${pathname}:`, err);
-    return new Response(
-      JSON.stringify({ error: err.message || "Internal server error" }),
-      { status: 500, headers: jsonHeaders },
-    );
+    return new Response(JSON.stringify({ error: err.message || "Internal server error" }), {
+      status: 500,
+      headers: jsonHeaders,
+    });
   }
 }

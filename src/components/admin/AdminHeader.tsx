@@ -25,7 +25,10 @@ export function AdminHeader({ productCount, inquiryCount, onLogout }: AdminHeade
           </Link>
 
           <div className="hidden items-center gap-2 sm:flex ml-4">
-            <Badge variant="outline" className="border-border text-muted-foreground gap-1.5 font-normal">
+            <Badge
+              variant="outline"
+              className="border-border text-muted-foreground gap-1.5 font-normal"
+            >
               <Sparkles className="size-3 text-gold" />
               {productCount} Products
             </Badge>

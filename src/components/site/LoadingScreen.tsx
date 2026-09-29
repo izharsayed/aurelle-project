@@ -69,7 +69,10 @@ export function LoadingScreen({
 
       {/* Atmospheric loading message */}
       <div className="mt-5 flex items-center gap-1.5 text-xs text-muted-foreground font-light">
-        <Sparkles className="size-3 text-gold/80 animate-spin" style={{ animationDuration: "3s" }} />
+        <Sparkles
+          className="size-3 text-gold/80 animate-spin"
+          style={{ animationDuration: "3s" }}
+        />
         <span>{message}</span>
       </div>
 

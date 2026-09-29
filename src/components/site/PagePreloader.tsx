@@ -86,7 +86,10 @@ export function PagePreloader({ minDuration = 850 }: PagePreloaderProps) {
 
       {/* Atmospheric Subtitle */}
       <div className="mt-5 flex items-center gap-1.5 text-xs text-muted-foreground font-light tracking-wide">
-        <Sparkles className="size-3 text-gold/80 animate-spin" style={{ animationDuration: "2.5s" }} />
+        <Sparkles
+          className="size-3 text-gold/80 animate-spin"
+          style={{ animationDuration: "2.5s" }}
+        />
         <span>Hand-finishing the collection...</span>
       </div>
 

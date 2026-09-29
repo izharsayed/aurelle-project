@@ -113,19 +113,9 @@ export interface CustomerDetails {
 }
 
 export type OrderStatus =
-  | "PENDING_PAYMENT"
-  | "PAID"
-  | "PROCESSING"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED";
+  "PENDING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
-export type PaymentStatus =
-  | "PENDING"
-  | "SUCCESS"
-  | "FAILED"
-  | "CANCELLED"
-  | "REFUNDED";
+export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED" | "REFUNDED";
 
 export interface OrderItem {
   productId: string;
@@ -178,5 +168,3 @@ export interface PaymentRecord {
   rawResponse?: Record<string, unknown> | undefined;
   createdAt: string;
 }
-
-

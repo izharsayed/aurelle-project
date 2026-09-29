@@ -3,10 +3,7 @@ import { LoadingScreen } from "@/components/site/LoadingScreen";
 
 export const Route = createFileRoute("/loading")({
   head: () => ({
-    meta: [
-      { title: "Loading — Velora Fine Jewelry" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Loading — Velora Fine Jewelry" }, { name: "robots", content: "noindex" }],
   }),
   component: LoadingPageRoute,
 });

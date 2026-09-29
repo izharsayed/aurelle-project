@@ -31,12 +31,7 @@ interface ProductEditDialogProps {
   onSave: (id: string, updates: Partial<Product>) => void;
 }
 
-export function ProductEditDialog({
-  product,
-  open,
-  onOpenChange,
-  onSave,
-}: ProductEditDialogProps) {
+export function ProductEditDialog({ product, open, onOpenChange, onSave }: ProductEditDialogProps) {
   const [formData, setFormData] = useState<Partial<Product>>({});
   const [tagsInput, setTagsInput] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -79,7 +74,9 @@ export function ProductEditDialog({
     }
 
     const salePrice =
-      formData.salePrice === null || formData.salePrice === undefined || formData.salePrice === ("" as any)
+      formData.salePrice === null ||
+      formData.salePrice === undefined ||
+      formData.salePrice === ("" as any)
         ? null
         : Number(formData.salePrice);
 
@@ -106,7 +103,8 @@ export function ProductEditDialog({
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl">Edit Product</DialogTitle>
           <DialogDescription>
-            Modify jewelry details, images, pricing, and showcase flags. Changes sync to live storefront immediately.
+            Modify jewelry details, images, pricing, and showcase flags. Changes sync to live
+            storefront immediately.
           </DialogDescription>
         </DialogHeader>
 

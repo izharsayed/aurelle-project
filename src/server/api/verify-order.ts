@@ -49,7 +49,8 @@ export async function handleVerifyOrder(orderId: string) {
       await orderDocRef.update({
         status: "PAID",
         "payment.status": "SUCCESS",
-        "payment.gatewayPaymentId": successfulPayment?.cf_payment_id || order.payment.gatewayPaymentId,
+        "payment.gatewayPaymentId":
+          successfulPayment?.cf_payment_id || order.payment.gatewayPaymentId,
         "payment.paidAt": successfulPayment?.payment_time || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });

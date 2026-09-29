@@ -137,7 +137,9 @@ export function Header() {
                         </Link>
 
                         {/* Category Dropdown Menu */}
-                        {dropdownOpen && <CategoryDropdown onClose={() => setDropdownOpen(false)} />}
+                        {dropdownOpen && (
+                          <CategoryDropdown onClose={() => setDropdownOpen(false)} />
+                        )}
                       </li>
                     );
                   }

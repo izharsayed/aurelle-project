@@ -8,7 +8,5 @@ declare module "@cashfreepayments/cashfree-js" {
     checkout: (options: CashfreeCheckoutOptions) => Promise<any>;
   }
 
-  export function load(options: {
-    mode: "sandbox" | "production";
-  }): Promise<CashfreeInstance>;
+  export function load(options: { mode: "sandbox" | "production" }): Promise<CashfreeInstance>;
 }

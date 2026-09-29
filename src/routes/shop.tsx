@@ -35,12 +35,11 @@ function ShopPage() {
           The Full Collection
         </h1>
         <p className="mt-5 text-sm leading-relaxed text-foreground/80 sm:text-base font-normal">
-          Hand-finished pieces across earrings, necklaces, bracelets, bangles, rings and
-          bridal sets. Use the filters to narrow it down.
+          Hand-finished pieces across earrings, necklaces, bracelets, bangles, rings and bridal
+          sets. Use the filters to narrow it down.
         </p>
       </header>
       <ProductBrowser products={products} />
     </div>
   );
 }
-
