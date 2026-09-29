@@ -16,7 +16,7 @@ function triggerCatalogSeed() {
 /**
  * Unified Server Request Handler for all API routes
  */
-export async function handleApiRoute(request: Request): Promise<Response | null> {
+export async function handleApiRoute(request: Request, env?: any): Promise<Response | null> {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
@@ -118,6 +118,22 @@ export async function handleApiRoute(request: Request): Promise<Response | null>
         status: result.status,
         headers: jsonHeaders,
       });
+    }
+
+    // 9. Media: Upload Image (Cloudflare R2)
+    if (pathname === "/api/upload" && request.method === "POST") {
+      const { handleUploadMedia } = await import("./api/upload-media");
+      const result = await handleUploadMedia(request, env);
+      return new Response(JSON.stringify(result.body), {
+        status: result.status,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 10. Media: Serve Image Stream (Cloudflare R2)
+    if (pathname.startsWith("/api/media/") && request.method === "GET") {
+      const { handleGetMedia } = await import("./api/upload-media");
+      return await handleGetMedia(request, env);
     }
 
     // Unhandled /api route

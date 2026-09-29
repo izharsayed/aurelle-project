@@ -34,72 +34,57 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Handle File Upload from Computer
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 1. Handle File Upload to Cloudflare R2
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsProcessing(true);
-    const readPromises = Array.from(files).map((file) => {
-      return new Promise<string>((resolve, reject) => {
-        // Basic size check: warn if image > 2MB
-        if (file.size > 3 * 1024 * 1024) {
-          toast.warning(
-            `"${file.name}" is large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Compressing...`,
-          );
+    const uploadedUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = (await res.json()) as { url?: string };
+          if (data.url) {
+            uploadedUrls.push(data.url);
+            continue;
+          }
         }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          // Optionally resize via canvas to keep localStorage light & fast
-          const imageObj = new Image();
-          imageObj.onload = () => {
-            const canvas = document.createElement("canvas");
-            const maxDim = 1200;
-            let width = imageObj.width;
-            let height = imageObj.height;
+        // Fallback: Read client-side if network upload failed
+        const readerPromise = new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as string);
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(file);
+        });
+        const fallbackUrl = await readerPromise;
+        if (fallbackUrl) uploadedUrls.push(fallbackUrl);
+      } catch (err) {
+        console.warn("⚠️ Upload error, using client fallback:", err);
+      }
+    }
 
-            if (width > maxDim || height > maxDim) {
-              if (width > height) {
-                height = Math.round((height * maxDim) / width);
-                width = maxDim;
-              } else {
-                width = Math.round((width * maxDim) / height);
-                height = maxDim;
-              }
-            }
+    if (uploadedUrls.length > 0) {
+      onChange([...images, ...uploadedUrls]);
+      toast.success(
+        `Uploaded ${uploadedUrls.length} image${uploadedUrls.length > 1 ? "s" : ""} to Cloudflare R2`,
+      );
+    } else {
+      toast.error("Failed to upload image(s)");
+    }
 
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              ctx.drawImage(imageObj, 0, 0, width, height);
-              resolve(canvas.toDataURL("image/jpeg", 0.85));
-            } else {
-              resolve(result);
-            }
-          };
-          imageObj.onerror = () => resolve(result);
-          imageObj.src = result;
-        };
-        reader.onerror = (err) => reject(err);
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(readPromises)
-      .then((dataUrls) => {
-        onChange([...images, ...dataUrls]);
-        toast.success(`Added ${dataUrls.length} image${dataUrls.length > 1 ? "s" : ""}`);
-      })
-      .catch(() => {
-        toast.error("Failed to read selected image(s)");
-      })
-      .finally(() => {
-        setIsProcessing(false);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      });
+    setIsProcessing(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // 2. Add via URL

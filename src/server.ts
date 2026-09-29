@@ -49,8 +49,8 @@ import { handleApiRoute } from "./server/handler";
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      // Intercept API routes (Cashfree webhooks, order creation, verification)
-      const apiResponse = await handleApiRoute(request);
+      // Intercept API routes (Cashfree webhooks, order creation, verification, R2 media)
+      const apiResponse = await handleApiRoute(request, env);
       if (apiResponse) {
         return apiResponse;
       }
