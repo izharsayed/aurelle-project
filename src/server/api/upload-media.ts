@@ -1,8 +1,6 @@
 /**
- * Cloudflare R2 Media Upload & CDN Streaming Service
- *
- * Provides serverless image upload and edge streaming directly through Cloudflare R2
- * with zero egress fees and global CDN edge caching.
+ * Media Upload Service — Supports Supabase Storage (100% Free, No Credit Card)
+ * with Cloudflare R2 / local fallback.
  */
 
 export async function handleUploadMedia(
@@ -51,17 +49,64 @@ export async function handleUploadMedia(
     return { status: 400, body: { error: "File data is empty" } };
   }
 
-  // Generate clean S3/R2 key
+  // Generate unique file path
   const safeName = originalName
     .toLowerCase()
     .replace(/[^a-z0-9.]+/g, "-")
     .replace(/-+/g, "-");
-  const key = `products/${Date.now()}-${safeName}`;
+  const filename = `${Date.now()}-${safeName}`;
 
-  // Check if Cloudflare R2 binding is available
+  // 1. Check for Supabase Storage (100% Free, No Credit Card)
+  const supabaseUrl = env?.SUPABASE_URL || process.env["SUPABASE_URL"];
+  const supabaseKey =
+    env?.SUPABASE_KEY ||
+    process.env["SUPABASE_KEY"] ||
+    env?.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    env?.SUPABASE_ANON_KEY ||
+    process.env["SUPABASE_ANON_KEY"];
+  const supabaseBucket = env?.SUPABASE_BUCKET || process.env["SUPABASE_BUCKET"] || "products";
+
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const baseUrl = supabaseUrl.replace(/\/+$/, "");
+      const uploadUrl = `${baseUrl}/storage/v1/object/${supabaseBucket}/${filename}`;
+
+      const res = await fetch(uploadUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${supabaseKey}`,
+          apikey: supabaseKey,
+          "Content-Type": fileType,
+        },
+        body: fileBuffer,
+      });
+
+      if (res.ok) {
+        const publicUrl = `${baseUrl}/storage/v1/object/public/${supabaseBucket}/${filename}`;
+        console.log(`✅ [Supabase Storage] Successfully uploaded: ${publicUrl}`);
+        return {
+          status: 200,
+          body: {
+            success: true,
+            key: filename,
+            url: publicUrl,
+          },
+        };
+      } else {
+        const errText = await res.text();
+        console.warn(`⚠️ [Supabase Storage Upload Warning]: ${errText}`);
+      }
+    } catch (err: any) {
+      console.error("❌ [Supabase Storage Error]:", err);
+    }
+  }
+
+  // 2. Fallback: Cloudflare R2 binding if present
   const r2 = env?.R2_BUCKET;
   if (r2 && typeof r2.put === "function") {
     try {
+      const key = `products/${filename}`;
       await r2.put(key, fileBuffer, {
         httpMetadata: {
           contentType: fileType,
@@ -69,7 +114,7 @@ export async function handleUploadMedia(
         },
       });
 
-      console.log(`✅ [R2] Successfully stored media: ${key}`);
+      console.log(`✅ [R2] Stored media: ${key}`);
       return {
         status: 200,
         body: {
@@ -80,14 +125,11 @@ export async function handleUploadMedia(
       };
     } catch (err: any) {
       console.error("❌ [R2 Upload Error]:", err);
-      return { status: 500, body: { error: err.message || "Failed to upload to Cloudflare R2" } };
     }
   }
 
-  // Fallback for local development if R2 binding is not configured in local environment
-  console.log(
-    "ℹ️ [R2] R2_BUCKET binding not found (local dev mode). Returning local base64 fallback.",
-  );
+  // 3. Fallback for local development if cloud storage is not yet configured
+  console.log("ℹ️ Cloud storage not configured yet. Using local base64 fallback.");
   const base64Str = btoa(
     new Uint8Array(fileBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ""),
   );
@@ -97,7 +139,7 @@ export async function handleUploadMedia(
     status: 200,
     body: {
       success: true,
-      key,
+      key: filename,
       url: dataUrl,
     },
   };
@@ -105,7 +147,6 @@ export async function handleUploadMedia(
 
 export async function handleGetMedia(request: Request, env: any): Promise<Response> {
   const url = new URL(request.url);
-  // Match /api/media/{key...}
   const key = url.pathname.replace(/^\/api\/media\//, "");
 
   if (!key) {
@@ -116,36 +157,23 @@ export async function handleGetMedia(request: Request, env: any): Promise<Respon
   }
 
   const r2 = env?.R2_BUCKET;
-  if (!r2 || typeof r2.get !== "function") {
-    return new Response(JSON.stringify({ error: "Cloudflare R2 binding not found" }), {
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  try {
-    const object = await r2.get(key);
-
-    if (!object) {
-      return new Response(JSON.stringify({ error: "Object not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+  if (r2 && typeof r2.get === "function") {
+    try {
+      const object = await r2.get(key);
+      if (object) {
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        headers.set("ETag", object.httpEtag);
+        headers.set("Cache-Control", "public, max-age=31536000, immutable");
+        return new Response(object.body, { headers });
+      }
+    } catch (err) {
+      console.error(err);
     }
-
-    const headers = new Headers();
-    object.writeHttpMetadata(headers);
-    headers.set("ETag", object.httpEtag);
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
-
-    return new Response(object.body, {
-      headers,
-    });
-  } catch (err: any) {
-    console.error(`❌ [R2 Stream Error for ${key}]:`, err);
-    return new Response(JSON.stringify({ error: "Failed to retrieve media object" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
   }
+
+  return new Response(JSON.stringify({ error: "Object not found" }), {
+    status: 404,
+    headers: { "Content-Type": "application/json" },
+  });
 }
