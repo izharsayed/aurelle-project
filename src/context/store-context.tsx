@@ -100,6 +100,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      // Fetch live catalog from Cloud Firestore API to ensure all devices stay in sync
+      fetch("/api/catalog/products")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && Array.isArray(data.products) && data.products.length > 0) {
+            setProducts(data.products);
+            try {
+              window.localStorage.setItem(CATALOG_KEY, JSON.stringify(data.products));
+            } catch {
+              /* ignore */
+            }
+          }
+        })
+        .catch(() => {
+          /* ignore network errors */
+        });
+
       const savedInquiries = window.localStorage.getItem(INQUIRIES_KEY);
       if (savedInquiries) {
         setInquiries(JSON.parse(savedInquiries) as InquiryRecord[]);
@@ -258,14 +275,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const clearWishlist = useCallback(() => setWishlist([]), []);
 
-  // Catalog actions
+  // Catalog actions (Cloud Firestore live sync)
   const updateProduct = useCallback((id: string, updates: Partial<Product>) => {
     setProducts((prev) => {
       const updated = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
+      const target = updated.find((p) => p.id === id);
       try {
         window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
       } catch {
         /* ignore */
+      }
+      if (target) {
+        fetch("/api/catalog/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(target),
+        }).catch((err) => console.warn("⚠️ [Store] Firestore product sync failed:", err));
       }
       return updated;
     });
@@ -279,6 +304,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       } catch {
         /* ignore */
       }
+      fetch("/api/catalog/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProd),
+      }).catch((err) => console.warn("⚠️ [Store] Firestore product add failed:", err));
       return updated;
     });
   }, []);
@@ -291,6 +321,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       } catch {
         /* ignore */
       }
+      fetch(`/api/catalog/products?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      }).catch((err) => console.warn("⚠️ [Store] Firestore product delete failed:", err));
       return updated;
     });
   }, []);

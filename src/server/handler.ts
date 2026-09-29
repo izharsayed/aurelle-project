@@ -88,6 +88,38 @@ export async function handleApiRoute(request: Request): Promise<Response | null>
       });
     }
 
+    // 6. Catalog: Get All Products
+    if (pathname === "/api/catalog/products" && request.method === "GET") {
+      const { handleGetCatalogProducts } = await import("./api/catalog-api");
+      const result = await handleGetCatalogProducts();
+      return new Response(JSON.stringify(result.body), {
+        status: result.status,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 7. Catalog: Save/Update Product
+    if (pathname === "/api/catalog/products" && request.method === "POST") {
+      const { handleSaveCatalogProduct } = await import("./api/catalog-api");
+      const body = await request.json();
+      const result = await handleSaveCatalogProduct(body);
+      return new Response(JSON.stringify(result.body), {
+        status: result.status,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 8. Catalog: Delete Product
+    if (pathname === "/api/catalog/products" && request.method === "DELETE") {
+      const { handleDeleteCatalogProduct } = await import("./api/catalog-api");
+      const id = url.searchParams.get("id") || "";
+      const result = await handleDeleteCatalogProduct(id);
+      return new Response(JSON.stringify(result.body), {
+        status: result.status,
+        headers: jsonHeaders,
+      });
+    }
+
     // Unhandled /api route
     return new Response(JSON.stringify({ error: `Not found: ${pathname}` }), {
       status: 404,
