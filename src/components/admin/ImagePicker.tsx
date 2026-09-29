@@ -77,7 +77,7 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
     if (uploadedUrls.length > 0) {
       onChange([...images, ...uploadedUrls]);
       toast.success(
-        `Uploaded ${uploadedUrls.length} image${uploadedUrls.length > 1 ? "s" : ""} to Cloudflare R2`,
+        `Uploaded ${uploadedUrls.length} image${uploadedUrls.length > 1 ? "s" : ""} successfully`,
       );
     } else {
       toast.error("Failed to upload image(s)");

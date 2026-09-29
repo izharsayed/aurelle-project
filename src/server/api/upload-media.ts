@@ -78,6 +78,7 @@ export async function handleUploadMedia(
           Authorization: `Bearer ${supabaseKey}`,
           apikey: supabaseKey,
           "Content-Type": fileType,
+          "x-upsert": "true",
         },
         body: fileBuffer,
       });
