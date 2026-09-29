@@ -43,7 +43,7 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { product: loaderProduct, slug } = Route.useLoaderData();
-  const { products: storeProducts } = useStore();
+  const { products: storeProducts, catalogLoaded } = useStore();
 
   const product =
     loaderProduct ||
@@ -51,6 +51,17 @@ function ProductPage() {
     getProductBySlug(slug);
 
   if (!product) {
+    if (!catalogLoaded) {
+      return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center bg-background px-4">
+          <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="mt-4 text-xs uppercase tracking-widest text-muted-foreground font-medium">
+            Locating piece...
+          </p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">

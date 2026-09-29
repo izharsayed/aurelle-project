@@ -91,7 +91,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     // 6. Catalog: Get All Products
     if (pathname === "/api/catalog/products" && request.method === "GET") {
       const { handleGetCatalogProducts } = await import("./api/catalog-api");
-      const result = await handleGetCatalogProducts();
+      const result = await handleGetCatalogProducts(env);
       return new Response(JSON.stringify(result.body), {
         status: result.status,
         headers: jsonHeaders,
@@ -102,7 +102,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     if (pathname === "/api/catalog/products" && request.method === "POST") {
       const { handleSaveCatalogProduct } = await import("./api/catalog-api");
       const body = await request.json();
-      const result = await handleSaveCatalogProduct(body);
+      const result = await handleSaveCatalogProduct(body, env);
       return new Response(JSON.stringify(result.body), {
         status: result.status,
         headers: jsonHeaders,
@@ -113,7 +113,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     if (pathname === "/api/catalog/products" && request.method === "DELETE") {
       const { handleDeleteCatalogProduct } = await import("./api/catalog-api");
       const id = url.searchParams.get("id") || "";
-      const result = await handleDeleteCatalogProduct(id);
+      const result = await handleDeleteCatalogProduct(id, env);
       return new Response(JSON.stringify(result.body), {
         status: result.status,
         headers: jsonHeaders,

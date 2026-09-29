@@ -42,6 +42,7 @@ interface StoreValue {
 
   // Catalog Management (Admin)
   products: Product[];
+  catalogLoaded: boolean;
   updateProduct: (id: string, updates: Partial<Product>) => void;
   addProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
@@ -74,6 +75,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // Dynamic Catalog state
   const [products, setProducts] = useState<Product[]>(defaultProducts);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
   const [inquiries, setInquiries] = useState<InquiryRecord[]>([]);
   const [whatsappNumber, setWhatsappNumberState] = useState<string>("");
 
@@ -100,7 +102,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Fetch live catalog from Cloud Firestore API to ensure all devices stay in sync
+      // Fetch live catalog from Cloud API to ensure all devices stay in sync
       fetch("/api/catalog/products")
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
@@ -115,6 +117,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         })
         .catch(() => {
           /* ignore network errors */
+        })
+        .finally(() => {
+          setCatalogLoaded(true);
         });
 
       const savedInquiries = window.localStorage.getItem(INQUIRIES_KEY);
@@ -299,7 +304,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedProduct),
-      }).catch((err) => console.warn("⚠️ [Store] Firestore product sync failed:", err));
+      })
+        .then((res) => {
+          if (res.ok) {
+            toast.success("Changes synced to cloud catalog");
+          }
+        })
+        .catch((err) => console.warn("⚠️ [Store] Cloud product sync failed:", err));
     }
   }, []);
 
@@ -318,7 +329,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newProd),
-    }).catch((err) => console.warn("⚠️ [Store] Firestore product add failed:", err));
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success("Piece synchronized across all devices");
+        } else {
+          toast.error("Failed to sync new product to server");
+        }
+      })
+      .catch((err) => {
+        console.warn("⚠️ [Store] Cloud product add failed:", err);
+        toast.error("Could not sync product to server");
+      });
   }, []);
 
   const deleteProduct = useCallback((id: string) => {
@@ -334,7 +356,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     fetch(`/api/catalog/products?id=${encodeURIComponent(id)}`, {
       method: "DELETE",
-    }).catch((err) => console.warn("⚠️ [Store] Firestore product delete failed:", err));
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success("Piece removed from cloud catalog");
+        }
+      })
+      .catch((err) => console.warn("⚠️ [Store] Cloud product delete failed:", err));
   }, []);
 
   const resetCatalog = useCallback(() => {
@@ -479,6 +507,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       requestOrder,
       closeOrderPreview: () => setOrderPreview(null),
       products,
+      catalogLoaded,
       updateProduct,
       addProduct,
       deleteProduct,
@@ -511,6 +540,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       orderPreview,
       requestOrder,
       products,
+      catalogLoaded,
       updateProduct,
       addProduct,
       deleteProduct,

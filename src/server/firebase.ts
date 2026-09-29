@@ -400,12 +400,12 @@ function createRestFirestore(projectId: string, clientEmail: string, privateKey:
 let activeDb: any = null;
 let isMock = true;
 
-export function initFirebase() {
-  if (activeDb) return { db: activeDb, isMock };
+export function initFirebase(env?: any) {
+  if (activeDb && !isMock) return { db: activeDb, isMock };
 
-  const projectId = process.env["FIREBASE_PROJECT_ID"];
-  const clientEmail = process.env["FIREBASE_CLIENT_EMAIL"];
-  let privateKey = process.env["FIREBASE_PRIVATE_KEY"];
+  const projectId = env?.FIREBASE_PROJECT_ID || process.env["FIREBASE_PROJECT_ID"];
+  const clientEmail = env?.FIREBASE_CLIENT_EMAIL || process.env["FIREBASE_CLIENT_EMAIL"];
+  let privateKey = env?.FIREBASE_PRIVATE_KEY || process.env["FIREBASE_PRIVATE_KEY"];
 
   if (privateKey) {
     privateKey = privateKey.replace(/\\n/g, "\n");
@@ -425,13 +425,15 @@ export function initFirebase() {
     }
   }
 
+  if (!activeDb) {
+    activeDb = getMockFirestore();
+  }
   isMock = true;
-  activeDb = getMockFirestore();
   return { db: activeDb, isMock: true };
 }
 
-export function getDb(): any {
-  return initFirebase().db;
+export function getDb(env?: any): any {
+  return initFirebase(env).db;
 }
 
 export function isUsingMockFirebase(): boolean {
