@@ -277,55 +277,64 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // Catalog actions (Cloud Firestore live sync)
   const updateProduct = useCallback((id: string, updates: Partial<Product>) => {
+    let updatedProduct: Product | undefined;
     setProducts((prev) => {
-      const updated = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
-      const target = updated.find((p) => p.id === id);
+      const next = prev.map((p) => {
+        if (p.id === id) {
+          updatedProduct = { ...p, ...updates };
+          return updatedProduct;
+        }
+        return p;
+      });
       try {
-        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(next));
       } catch {
         /* ignore */
       }
-      if (target) {
-        fetch("/api/catalog/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(target),
-        }).catch((err) => console.warn("⚠️ [Store] Firestore product sync failed:", err));
-      }
-      return updated;
+      return next;
     });
+
+    if (updatedProduct) {
+      fetch("/api/catalog/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedProduct),
+      }).catch((err) => console.warn("⚠️ [Store] Firestore product sync failed:", err));
+    }
   }, []);
 
   const addProduct = useCallback((newProd: Product) => {
     setProducts((prev) => {
-      const updated = [newProd, ...prev];
+      const next = [newProd, ...prev];
       try {
-        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(next));
       } catch {
         /* ignore */
       }
-      fetch("/api/catalog/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProd),
-      }).catch((err) => console.warn("⚠️ [Store] Firestore product add failed:", err));
-      return updated;
+      return next;
     });
+
+    fetch("/api/catalog/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProd),
+    }).catch((err) => console.warn("⚠️ [Store] Firestore product add failed:", err));
   }, []);
 
   const deleteProduct = useCallback((id: string) => {
     setProducts((prev) => {
-      const updated = prev.filter((p) => p.id !== id);
+      const next = prev.filter((p) => p.id !== id);
       try {
-        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(updated));
+        window.localStorage.setItem(CATALOG_KEY, JSON.stringify(next));
       } catch {
         /* ignore */
       }
-      fetch(`/api/catalog/products?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      }).catch((err) => console.warn("⚠️ [Store] Firestore product delete failed:", err));
-      return updated;
+      return next;
     });
+
+    fetch(`/api/catalog/products?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    }).catch((err) => console.warn("⚠️ [Store] Firestore product delete failed:", err));
   }, []);
 
   const resetCatalog = useCallback(() => {
