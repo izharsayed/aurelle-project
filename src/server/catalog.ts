@@ -131,9 +131,9 @@ export async function verifyCartAndCalculateTotals(
 /**
  * Seeds Firestore with the initial product catalog if empty
  */
-export async function seedAuthoritativeCatalog(): Promise<number> {
+export async function seedAuthoritativeCatalog(env?: any): Promise<number> {
   try {
-    const db = getDb();
+    const db = getDb(env);
     const productsColl = db.collection("products");
     const snapshot = await productsColl.get();
 
@@ -154,3 +154,4 @@ export async function seedAuthoritativeCatalog(): Promise<number> {
     return 0;
   }
 }
+

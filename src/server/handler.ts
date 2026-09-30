@@ -4,12 +4,12 @@ import { handleVerifyOrder } from "./api/verify-order";
 import { handleGetAdminOrders, handleUpdateOrderStatus } from "./api/admin-orders";
 import { seedAuthoritativeCatalog } from "./catalog";
 
-// Auto-seed catalog on server startup
+// Auto-seed catalog on first request (pass env so Firebase is properly initialized)
 let seedAttempted = false;
-function triggerCatalogSeed() {
+function triggerCatalogSeed(env?: any) {
   if (!seedAttempted) {
     seedAttempted = true;
-    seedAuthoritativeCatalog().catch(() => {});
+    seedAuthoritativeCatalog(env).catch(() => {});
   }
 }
 
@@ -24,7 +24,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     return null;
   }
 
-  triggerCatalogSeed();
+  triggerCatalogSeed(env);
 
   const jsonHeaders = {
     "Content-Type": "application/json",
@@ -134,6 +134,20 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     if (pathname.startsWith("/api/media/") && request.method === "GET") {
       const { handleGetMedia } = await import("./api/upload-media");
       return await handleGetMedia(request, env);
+    }
+
+    // 11. Debug: Check which env vars are present in this Worker
+    if (pathname === "/api/debug/env" && request.method === "GET") {
+      const envCheck: Record<string, boolean> = {
+        FIREBASE_PROJECT_ID: !!(env as any)?.FIREBASE_PROJECT_ID || !!process.env["FIREBASE_PROJECT_ID"],
+        FIREBASE_CLIENT_EMAIL: !!(env as any)?.FIREBASE_CLIENT_EMAIL || !!process.env["FIREBASE_CLIENT_EMAIL"],
+        FIREBASE_PRIVATE_KEY: !!(env as any)?.FIREBASE_PRIVATE_KEY || !!process.env["FIREBASE_PRIVATE_KEY"],
+        SUPABASE_URL: !!(env as any)?.SUPABASE_URL || !!process.env["SUPABASE_URL"],
+        SUPABASE_KEY: !!(env as any)?.SUPABASE_KEY || !!process.env["SUPABASE_KEY"],
+        SUPABASE_BUCKET: !!(env as any)?.SUPABASE_BUCKET || !!process.env["SUPABASE_BUCKET"],
+        CASHFREE_APP_ID: !!(env as any)?.CASHFREE_APP_ID || !!process.env["CASHFREE_APP_ID"],
+      };
+      return new Response(JSON.stringify({ env: envCheck }), { status: 200, headers: jsonHeaders });
     }
 
     // Unhandled /api route
