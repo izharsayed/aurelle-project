@@ -1,8 +1,8 @@
-# Velora Fine Jewelry Project Guidelines
+# Zarika Fine Jewelry Project Guidelines
 
 ## Overview
 
-Velora Fine Jewelry is a luxury artificial jewelry storefront built with TanStack Start, React 19, TypeScript, and Tailwind CSS v4.
+Zarika Fine Jewelry is a luxury artificial jewelry storefront built with TanStack Start, React 19, TypeScript, and Tailwind CSS v4.
 
 ## Complete Project History & Architecture
 

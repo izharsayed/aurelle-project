@@ -15,7 +15,7 @@ export function LoadingScreen({
   return (
     <div
       role="status"
-      aria-label="Loading Velora Fine Jewelry"
+      aria-label="Loading Zarika Fine Jewelry"
       className={cn(
         "relative flex flex-col items-center justify-center bg-background px-6 transition-colors duration-500 overflow-hidden",
         fullScreen ? "fixed inset-0 z-100 min-h-screen" : "min-h-[60vh] w-full py-16",
@@ -50,7 +50,7 @@ export function LoadingScreen({
       {/* Brand Title with editorial spacing */}
       <div className="text-center space-y-2">
         <h2 className="font-serif text-3xl sm:text-4xl tracking-[0.3em] uppercase text-foreground font-light">
-          Velora
+          Zarika
         </h2>
         <p className="text-[0.65rem] sm:text-xs tracking-[0.25em] uppercase text-gold font-medium">
           Fine Jewelry

@@ -8,16 +8,16 @@ import { useStore } from "@/context/store-context";
 export const Route = createFileRoute("/collections")({
   head: () => ({
     meta: [
-      { title: "Collections & Occasions — Velora" },
+      { title: "Collections & Occasions — Zarika" },
       {
         name: "description",
         content:
           "Curated jewelry edits for weddings, festive season, parties, everyday wear and gifting — styled and ready to order.",
       },
-      { property: "og:title", content: "Collections & Occasions — Velora" },
+      { property: "og:title", content: "Collections & Occasions — Zarika" },
       {
         property: "og:description",
-        content: "Bridal, festive, party, everyday and gifting edits from Velora.",
+        content: "Bridal, festive, party, everyday and gifting edits from Zarika.",
       },
     ],
   }),

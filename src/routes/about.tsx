@@ -10,13 +10,13 @@ import { img } from "@/data/images";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Our Story — Velora Fine Jewelry" },
+      { title: "Our Story — Zarika Fine Jewelry" },
       {
         name: "description",
         content:
-          "Velora Fine Jewelry makes hand-finished artificial jewelry in small batches: 18K gold plating, nickel-free alloys and six artisans behind every piece.",
+          "Zarika Fine Jewelry makes hand-finished artificial jewelry in small batches: 18K gold plating, nickel-free alloys and six artisans behind every piece.",
       },
-      { property: "og:title", content: "Our Story — Velora Fine Jewelry" },
+      { property: "og:title", content: "Our Story — Zarika Fine Jewelry" },
       {
         property: "og:description",
         content: "Small-batch, hand-finished artificial jewelry made to be worn every day.",
@@ -62,7 +62,7 @@ function AboutPage() {
               Fine Jewelry Feeling, Without The Fine Jewelry Price
             </h1>
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Velora began with a simple frustration: artificial jewelry either looked the part and
+              Zarika began with a simple frustration: artificial jewelry either looked the part and
               fell apart, or lasted and looked like plastic. We wanted the third option — pieces
               with real weight, warm colour and a finish that survives being worn.
             </p>
@@ -107,7 +107,7 @@ function AboutPage() {
 
         <section aria-labelledby="numbers-title" className="mt-24 border-y border-border py-14">
           <h2 id="numbers-title" className="sr-only">
-            Velora in numbers
+            Zarika in numbers
           </h2>
           <dl className="grid gap-10 text-center sm:grid-cols-3">
             {[

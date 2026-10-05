@@ -12,13 +12,13 @@ import { faqs } from "@/data/testimonials";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Ordering, Shipping & Care | Velora" },
+      { title: "FAQ — Ordering, Shipping & Care | Zarika" },
       {
         name: "description",
         content:
           "Answers on WhatsApp ordering, payment, delivery times, returns, plating quality and how to care for artificial jewelry.",
       },
-      { property: "og:title", content: "Velora FAQ" },
+      { property: "og:title", content: "Zarika FAQ" },
       {
         property: "og:description",
         content: "Ordering, payment, shipping, returns, quality and care questions answered.",

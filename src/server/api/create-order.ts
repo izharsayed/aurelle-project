@@ -120,7 +120,7 @@ export async function handleCreateOrder(
     },
     returnUrl,
     notifyUrl,
-    orderNote: `Velora Jewelry Order ${orderId}`,
+    orderNote: `Zarika Jewelry Order ${orderId}`,
   });
 
   // 6. Update internal order with gateway references

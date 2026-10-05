@@ -10,13 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Velora — Order & Styling Help" },
+      { title: "Contact Zarika — Order & Styling Help" },
       {
         name: "description",
         content:
-          "Talk to the Velora concierge team on WhatsApp for orders, sizing and styling help, or send us a message and we'll reply within a day.",
+          "Talk to the Zarika concierge team on WhatsApp for orders, sizing and styling help, or send us a message and we'll reply within a day.",
       },
-      { property: "og:title", content: "Contact Velora" },
+      { property: "og:title", content: "Contact Zarika" },
       {
         property: "og:description",
         content: "WhatsApp ordering, styling advice and order support from a real person.",
@@ -51,7 +51,7 @@ function ContactPage() {
                 title: "WhatsApp",
                 body: "Fastest way to reach us — usually a reply within 10 minutes during opening hours.",
               },
-              { Icon: Mail, title: "Email", body: "concierge@velorajewelry.com" },
+              { Icon: Mail, title: "Email", body: "concierge@zarikajewelry.com" },
               { Icon: Clock, title: "Hours", body: "Monday to Saturday, 10am – 7pm IST" },
               { Icon: MapPin, title: "Studio", body: "Jaipur, Rajasthan — visits by appointment" },
             ].map(({ Icon, title, body }) => (

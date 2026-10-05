@@ -2,7 +2,7 @@ import type { Product } from "@/data/types";
 import { formatPrice } from "./format";
 
 /**
- * Default Velora WhatsApp Concierge phone number (with country code).
+ * Default Zarika WhatsApp Concierge phone number (with country code).
  * Can be updated anytime by the store manager in /admin Settings.
  */
 export const DEFAULT_WHATSAPP_NUMBER = "919876543210";
@@ -19,7 +19,7 @@ export const buildOrderMessage = ({ product, color, quantity = 1 }: OrderIntent)
   const siteOrigin = typeof window !== "undefined" ? window.location.origin : "";
 
   return [
-    "✨ *Order Inquiry — Velora Fine Jewelry*",
+    "✨ *Order Inquiry — Zarika Fine Jewelry*",
     "",
     `💎 *Product:* ${product.name}`,
     `🏷️ *SKU:* ${product.sku}`,

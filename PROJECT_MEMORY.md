@@ -1,4 +1,4 @@
-# Velora Fine Jewelry — Project Memory & Agent Context
+# Zarika Fine Jewelry — Project Memory & Agent Context
 
 This document serves as the complete, chronological memory and technical reference of everything designed, built, customized, and configured in this project. Any AI agent reading this file will have full context to continue work without losing progress.
 
@@ -6,7 +6,7 @@ This document serves as the complete, chronological memory and technical referen
 
 ## 1. Project Overview & Brand Identity
 
-- **Brand Name**: **Velora Fine Jewelry** (formerly "Aurelle", completely rebranded across all code, metadata, routes, copy, and packages).
+- **Brand Name**: **Zarika Fine Jewelry** (formerly "Velora" / "Aurelle", completely rebranded across all code, metadata, routes, copy, and packages).
 - **Domain & Category**: Luxury artificial jewelry storefront and catalog (Jaipur craftsmanship aesthetic, 18K anti-tarnish gold plating, hypoallergenic pieces).
 - **GitHub Repository**: [https://github.com/izharsayed/aurelle-project.git](https://github.com/izharsayed/aurelle-project.git) (branch: `main`).
 - **Local Dev Server**: Runs on `http://localhost:8080` via Vite (`npm run dev`).
@@ -29,13 +29,13 @@ This document serves as the complete, chronological memory and technical referen
 
 ## 3. Work Completed & Key Implementations
 
-### A. Complete Rebranding to "Velora Fine Jewelry"
+### A. Complete Rebranding to "Zarika Fine Jewelry"
 
-- Replaced all traces of "Aurelle" and legacy starter templates across:
+- Replaced all traces of legacy names across:
   - Header, footer, logo (`Logo.tsx`), mobile menu, admin portal, page metadata (`__root.tsx`, `index.tsx`, `about.tsx`, `contact.tsx`, `shop.tsx`, etc.).
-  - Email updated to `concierge@velorajewelry.com`.
-  - Collections updated from "Aurelle Signature" to "Velora Signature".
-  - `package.json` name updated to `velora-fine-jewelry`.
+  - Email updated to `concierge@zarikajewelry.com`.
+  - Collections updated to "Zarika Signature".
+  - `package.json` name updated to `zarika-fine-jewelry`.
 
 ### B. Custom Luxury Favicon & Lovable De-branding
 
@@ -48,7 +48,7 @@ This document serves as the complete, chronological memory and technical referen
 
 - **Centered Logo 3-Column Architecture**:
   - **Left**: Primary navigation links (_Shop, Collections, New Arrivals, Our Story_) with active gold underline indicators.
-  - **Center**: Perfectly centered **VELORA** brand logo.
+  - **Center**: Perfectly centered **ZARIKA** brand logo.
   - **Right**: Search trigger, Wishlist link with live gold count badge, Theme Toggle, and WhatsApp Concierge hotline pill.
 - **Category Mega-Dropdown (`CategoryDropdown.tsx`)**:
   - Hovering over "Shop" reveals an editorial glassmorphic panel with direct links to all jewelry categories (_Earrings, Necklaces, Bracelets, Bangles, Rings, Sets_), signature collections, and a _Heirloom Bridal Suite_ spotlight card.
@@ -66,7 +66,7 @@ This document serves as the complete, chronological memory and technical referen
 ### E. Page Reload Loading Animation (`PagePreloader.tsx` & `LoadingScreen.tsx`)
 
 - Automatic full-screen preloader that triggers on initial site visits and page reloads (F5).
-- Features ambient gold radial glow, dual concentric gold orbit rings (continuous spin + counter-rotating dashed ring), pulsing gem medallion, editorial _"VELORA — FINE JEWELRY"_ typography, and a shimmering gold progress line.
+- Features ambient gold radial glow, dual concentric gold orbit rings (continuous spin + counter-rotating dashed ring), pulsing gem medallion, editorial _"ZARIKA — FINE JEWELRY"_ typography, and a shimmering gold progress line.
 - Plays for ~850ms, then smoothly dissolves with an exit crossfade (`opacity-0 pointer-events-none scale-[1.02] blur-[1px] transition-all duration-700 ease-out`) before unmounting from the DOM.
 - Also wired as the global router `pendingComponent` in `src/routes/__root.tsx` and previewable at `/loading`.
 
@@ -155,7 +155,7 @@ aurelle-project/
 ├── package.json                      # Project metadata & slimmed dependencies
 ├── vite.config.ts                    # Vite + TanStack Start + Nitro SSR config
 ├── public/
-│   ├── favicon.svg                   # Luxury Velora golden gem vector icon
+│   ├── favicon.svg                   # Luxury Zarika golden gem vector icon
 │   ├── favicon.ico                   # Binary Windows/browser icon
 │   └── robots.txt                    # Search crawler rules
 └── src/
@@ -198,7 +198,7 @@ aurelle-project/
     │   │   └── QuickViewModal.tsx    # 1-click preview modal
     │   ├── site/
     │   │   ├── LoadingScreen.tsx     # Router pending & standalone loader
-    │   │   ├── Logo.tsx              # Velora serif logo
+    │   │   ├── Logo.tsx              # Zarika serif logo
     │   │   ├── PagePreloader.tsx     # Page reload luxury splash animation
     │   │   ├── ThemeToggle.tsx       # Sun/Moon animated theme switch
     │   │   └── WhatsAppButton.tsx    # WhatsApp order trigger button
@@ -252,4 +252,4 @@ aurelle-project/
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
-> _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Velora Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+> _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_

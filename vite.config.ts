@@ -35,7 +35,7 @@ export default defineConfig(({ command }) => ({
     }),
     viteReact(),
     {
-      name: "velora-dev-api",
+      name: "zarika-dev-api",
       configureServer(server: any) {
         server.middlewares.use(async (req: any, res: any, next: any) => {
           if (!req.url?.startsWith("/api/")) return next();

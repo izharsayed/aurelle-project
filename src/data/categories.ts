@@ -79,7 +79,7 @@ export const occasions: Occasion[] = [
 ];
 
 export const collections = [
-  "Velora Signature",
+  "Zarika Signature",
   "Heirloom Bridal",
   "Everyday Fine",
   "Festive Nights",

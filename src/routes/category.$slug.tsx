@@ -13,11 +13,11 @@ export const Route = createFileRoute("/category/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Category not found — Velora" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Category not found — Zarika" }, { name: "robots", content: "noindex" }],
       };
     }
     const { category } = loaderData;
-    const title = `${category.name} — Velora Fine Jewelry`;
+    const title = `${category.name} — Zarika Fine Jewelry`;
     return {
       meta: [
         { title },

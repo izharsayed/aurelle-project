@@ -31,7 +31,7 @@ export function Footer() {
           <div className="max-w-xs">
             <Logo />
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-              Velora Fine Jewelry crafts timeless, hand-finished artificial jewelry — warmly plated,
+              Zarika Fine Jewelry crafts timeless, hand-finished artificial jewelry — warmly plated,
               artisanally detailed, and designed to elevate every occasion.
             </p>
           </div>
@@ -90,13 +90,13 @@ export function Footer() {
             <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
               Mon–Sat, 10am–7pm IST
               <br />
-              concierge@velorajewelry.com
+              concierge@zarikajewelry.com
             </p>
           </div>
         </div>
 
         <div className="mt-14 grid gap-4 border-t border-border pt-8 text-xs text-muted-foreground sm:flex sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Velora Fine Jewelry. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Zarika Fine Jewelry. All rights reserved.</p>
           <ul className="flex flex-wrap items-center gap-6">
             <li>
               <Link to="/faq" className="link-underline hover:text-foreground">

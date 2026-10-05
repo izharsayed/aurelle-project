@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/order/$orderId")({
   head: () => ({
     meta: [
-      { title: "Order Confirmation — Velora Fine Jewelry" },
+      { title: "Order Confirmation — Zarika Fine Jewelry" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

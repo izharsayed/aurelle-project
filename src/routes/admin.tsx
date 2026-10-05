@@ -79,7 +79,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Velora — Admin Management Portal" },
+      { title: "Zarika — Admin Management Portal" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -227,7 +227,7 @@ function AdminPage() {
       }
       setIsAuthenticated(true);
       setPinError("");
-      toast.success("Welcome to Velora Admin");
+      toast.success("Welcome to Zarika Admin");
     } else {
       setPinError("Incorrect PIN. Please try again.");
     }
@@ -308,7 +308,7 @@ function AdminPage() {
               <Lock className="size-5" />
             </div>
             <CardTitle className="font-serif text-3xl font-normal tracking-wide">
-              Velora Admin
+              Zarika Admin
             </CardTitle>
             <CardDescription className="text-sm">
               Enter your manager passcode to access catalog management and customer orders.
@@ -574,7 +574,7 @@ function AdminPage() {
                           <AlertDialogTitle>Reset Catalog to Initial Seed Data?</AlertDialogTitle>
                           <AlertDialogDescription>
                             This will revert all custom products, pricing changes, and stock toggles
-                            back to the initial Velora catalog.
+                            back to the initial Zarika catalog.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

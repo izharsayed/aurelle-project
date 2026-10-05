@@ -76,7 +76,7 @@ export async function createCashfreeOrder(
       notify_url: params.notifyUrl,
       payment_methods: "cc,dc,upi,nb,app",
     },
-    order_note: params.orderNote || "Velora Fine Jewelry Order",
+    order_note: params.orderNote || "Zarika Fine Jewelry Order",
   };
 
   const response = await fetch(`${config.baseUrl}/orders`, {

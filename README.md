@@ -1,6 +1,6 @@
-# Velora Fine Jewelry — Luxury Jewelry Storefront
+# Zarika Fine Jewelry — Luxury Jewelry Storefront
 
-Velora Fine Jewelry is an e-commerce web application for a luxury artificial jewelry brand, featuring warm gold aesthetics, direct WhatsApp concierge ordering, full product browsing, and an integrated Admin Portal.
+Zarika Fine Jewelry is an e-commerce web application for a luxury artificial jewelry brand, featuring warm gold aesthetics, direct WhatsApp concierge ordering, full product browsing, and an integrated Admin Portal.
 
 ---
 

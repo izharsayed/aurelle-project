@@ -9,12 +9,12 @@ import { useStore } from "@/context/store-context";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "Your Wishlist — Velora" },
+      { title: "Your Wishlist — Zarika" },
       {
         name: "description",
-        content: "The Velora pieces you've saved, kept on this device and ready to order anytime.",
+        content: "The Zarika pieces you've saved, kept on this device and ready to order anytime.",
       },
-      { property: "og:title", content: "Your Wishlist — Velora" },
+      { property: "og:title", content: "Your Wishlist — Zarika" },
       { property: "og:description", content: "Saved jewelry pieces, ready when you are." },
     ],
   }),

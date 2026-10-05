@@ -17,7 +17,7 @@ export function AdminHeader({ productCount, inquiryCount, onLogout }: AdminHeade
         <div className="flex items-center gap-3">
           <Link to="/admin" className="flex items-center gap-2 group">
             <span className="font-serif text-2xl font-normal tracking-wide text-foreground">
-              Velora
+              Zarika
             </span>
             <span className="rounded bg-accent/15 px-2 py-0.5 font-sans text-xs font-medium tracking-wider uppercase text-accent">
               Admin

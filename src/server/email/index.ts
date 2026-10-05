@@ -3,7 +3,7 @@ import { formatPrice } from "@/lib/format";
 import { getDb } from "../firebase";
 
 /**
- * Builds a luxury branded HTML email template for Velora Fine Jewelry
+ * Builds a luxury branded HTML email template for Zarika Fine Jewelry
  */
 export function buildOrderConfirmationEmailHtml(order: Order): string {
   const itemsHtml = order.items
@@ -30,7 +30,7 @@ export function buildOrderConfirmationEmailHtml(order: Order): string {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Your Velora Fine Jewelry Order Confirmation</title>
+  <title>Your Zarika Fine Jewelry Order Confirmation</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #fbf9f5; font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a;">
   <div style="max-width: 600px; margin: 30px auto; background: #ffffff; border: 1px solid #e8e3d9; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
@@ -38,7 +38,7 @@ export function buildOrderConfirmationEmailHtml(order: Order): string {
     <!-- Brand Header -->
     <div style="background: #111111; padding: 32px 20px; text-align: center; border-bottom: 2px solid #c9a84c;">
       <h1 style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; letter-spacing: 0.25em; text-transform: uppercase; color: #ffffff; font-weight: 300;">
-        V E L O R A
+        Z A R I K A
       </h1>
       <p style="margin: 6px 0 0; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #c9a84c;">
         Fine Jewelry • Jaipur
@@ -124,7 +124,7 @@ export function buildOrderConfirmationEmailHtml(order: Order): string {
         Need concierge assistance with this order? Reply directly to this email or message our WhatsApp team.
       </p>
       <p style="margin: 0; font-size: 11px; color: #999999;">
-        © ${new Date().getFullYear()} Velora Fine Jewelry. All rights reserved.
+        © ${new Date().getFullYear()} Zarika Fine Jewelry. All rights reserved.
       </p>
     </div>
 
@@ -151,7 +151,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
     await mailCollection.add({
       to: [order.customer.email],
       message: {
-        subject: `Order Confirmed: ${order.orderId} • Velora Fine Jewelry`,
+        subject: `Order Confirmed: ${order.orderId} • Zarika Fine Jewelry`,
         text: `Thank you for your order #${order.orderId}, ${order.customer.fullName}. Your payment of ${formatPrice(order.totalAmount)} was received.`,
         html,
       },

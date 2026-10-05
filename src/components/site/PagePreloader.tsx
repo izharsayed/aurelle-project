@@ -67,7 +67,7 @@ export function PagePreloader({ minDuration = 850 }: PagePreloaderProps) {
       {/* Brand Name & Tagline */}
       <div className="text-center space-y-2">
         <h1 className="font-serif text-3xl sm:text-4xl tracking-[0.32em] uppercase text-foreground font-light">
-          Velora
+          Zarika
         </h1>
         <p className="text-[0.65rem] sm:text-xs tracking-[0.28em] uppercase text-gold font-medium">
           Fine Jewelry
@@ -79,7 +79,7 @@ export function PagePreloader({ minDuration = 850 }: PagePreloaderProps) {
         <div
           className="absolute inset-y-0 h-full w-24 bg-gradient-to-r from-transparent via-gold to-transparent"
           style={{
-            animation: "veloraShimmer 1.5s infinite ease-in-out",
+            animation: "zarikaShimmer 1.5s infinite ease-in-out",
           }}
         />
       </div>
@@ -94,7 +94,7 @@ export function PagePreloader({ minDuration = 850 }: PagePreloaderProps) {
       </div>
 
       <style>{`
-        @keyframes veloraShimmer {
+        @keyframes zarikaShimmer {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(200%); }
         }

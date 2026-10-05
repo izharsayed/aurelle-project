@@ -13,7 +13,7 @@ import type { CustomerDetails } from "@/data/types";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Secure Luxury Checkout — Velora Fine Jewelry" },
+      { title: "Secure Luxury Checkout — Zarika Fine Jewelry" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -530,7 +530,7 @@ function CheckoutPage() {
                   🔒 Encrypted Payment via Cashfree
                 </p>
                 <p className="text-[0.62rem] text-muted-foreground">
-                  By clicking Pay, you agree to Velora Fine Jewelry's care, dispatch, and return
+                  By clicking Pay, you agree to Zarika Fine Jewelry's care, dispatch, and return
                   policies.
                 </p>
               </div>

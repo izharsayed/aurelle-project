@@ -84,13 +84,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Velora Fine Jewelry — Handcrafted Luxury & Elegance" },
+      { title: "Zarika Fine Jewelry — Handcrafted Luxury & Elegance" },
       {
         name: "description",
         content:
           "Hand-finished fine artificial jewelry in 18K gold and rhodium plating. Earrings, necklaces, bangles and bridal sets, ordered over WhatsApp.",
       },
-      { name: "author", content: "Velora Fine Jewelry" },
+      { name: "author", content: "Zarika Fine Jewelry" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

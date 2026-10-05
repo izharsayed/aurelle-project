@@ -34,7 +34,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
               </div>
               <div>
                 <SheetTitle className="font-serif text-lg tracking-[0.24em] uppercase text-foreground font-light leading-none">
-                  Velora
+                  Zarika
                 </SheetTitle>
                 <p className="text-[0.6rem] tracking-[0.2em] uppercase text-gold font-medium mt-0.5">
                   Fine Jewelry

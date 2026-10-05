@@ -24,11 +24,11 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData?.product) {
       return {
-        meta: [{ title: "Product Detail — Velora Fine Jewelry" }],
+        meta: [{ title: "Product Detail — Zarika Fine Jewelry" }],
       };
     }
     const { product } = loaderData;
-    const title = `${product.name} — Velora Fine Jewelry`;
+    const title = `${product.name} — Zarika Fine Jewelry`;
     return {
       meta: [
         { title },

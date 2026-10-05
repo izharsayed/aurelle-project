@@ -6,13 +6,13 @@ import { useStore } from "@/context/store-context";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop All Jewelry — Velora Fine Jewelry" },
+      { title: "Shop All Jewelry — Zarika Fine Jewelry" },
       {
         name: "description",
         content:
-          "Browse all Velora pieces. Filter by category, price, colour and occasion, then order the ones you love over WhatsApp.",
+          "Browse all Zarika pieces. Filter by category, price, colour and occasion, then order the ones you love over WhatsApp.",
       },
-      { property: "og:title", content: "Shop All Jewelry — Velora Fine Jewelry" },
+      { property: "og:title", content: "Shop All Jewelry — Zarika Fine Jewelry" },
       {
         property: "og:description",
         content:

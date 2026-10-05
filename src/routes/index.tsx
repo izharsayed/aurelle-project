@@ -16,13 +16,13 @@ import { useStore } from "@/context/store-context";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Velora Fine Jewelry — Handcrafted Luxury & Elegance" },
+      { title: "Zarika Fine Jewelry — Handcrafted Luxury & Elegance" },
       {
         name: "description",
         content:
           "Elegant artificial jewelry for weddings, festivals and every day. Explore earrings, necklaces, bangles and bridal sets — order in minutes on WhatsApp.",
       },
-      { property: "og:title", content: "Velora Fine Jewelry" },
+      { property: "og:title", content: "Zarika Fine Jewelry" },
       {
         property: "og:description",
         content:
@@ -273,7 +273,7 @@ function HomePage() {
         aria-labelledby="why-title"
         className="mx-auto max-w-[90rem] px-5 py-20 sm:px-8 sm:py-28"
       >
-        <SectionHeading eyebrow="Why Velora" title="Quietly Better" className="mb-14" />
+        <SectionHeading eyebrow="Why Zarika" title="Quietly Better" className="mb-14" />
         <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {promises.map(({ Icon, title, body }, i) => (
             <li key={title}>
@@ -309,7 +309,7 @@ function HomePage() {
         className="mx-auto max-w-[90rem] px-5 py-20 sm:px-8 sm:py-28"
       >
         <SectionHeading
-          eyebrow="@velorafinejewelry"
+          eyebrow="@zarikafinejewelry"
           title="Follow Our Story"
           description="Styling notes, behind-the-bench moments and new pieces first."
           className="mb-14"
