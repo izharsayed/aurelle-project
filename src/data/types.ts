@@ -110,6 +110,8 @@ export interface CustomerDetails {
   city: string;
   state: string;
   pincode: string;
+  phoneVerified?: boolean | undefined;
+  verifiedVia?: "whatsapp" | "sms" | undefined;
 }
 
 export type OrderStatus =

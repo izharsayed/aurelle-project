@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Lock, ShieldCheck, ShoppingBag } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Lock, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { load } from "@cashfreepayments/cashfree-js";
 import { useStore } from "@/context/store-context";
 import { formatPrice } from "@/lib/format";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import type { CustomerDetails } from "@/data/types";
+import { WhatsAppOtpDialog, WhatsAppIcon } from "@/components/checkout/WhatsAppOtpDialog";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -74,6 +75,28 @@ function CheckoutPage() {
 
   const [errors, setErrors] = useState<Partial<Record<keyof CustomerDetails, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
+
+  const handlePhoneVerified = (profile?: Partial<CustomerDetails>) => {
+    setIsPhoneVerified(true);
+    setErrors((prev) => ({ ...prev, mobileNumber: undefined }));
+
+    if (profile) {
+      setCustomer((prev) => ({
+        ...prev,
+        fullName: profile.fullName || prev.fullName,
+        email: profile.email || prev.email,
+        address: profile.address || prev.address,
+        city: profile.city || prev.city,
+        state: profile.state || prev.state,
+        pincode: profile.pincode || prev.pincode,
+      }));
+      toast.success("Welcome back!", {
+        description: "Your saved delivery address has been auto-filled.",
+      });
+    }
+  };
 
   const shippingFee = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : 150;
   const grandTotal = cartTotal + shippingFee;
@@ -90,6 +113,8 @@ function CheckoutPage() {
       cleanPhone.length === 12 && cleanPhone.startsWith("91") ? cleanPhone.slice(2) : cleanPhone;
     if (!/^[6-9]\d{9}$/.test(finalPhone)) {
       errs.mobileNumber = "Enter a valid 10-digit Indian mobile number.";
+    } else if (!isPhoneVerified) {
+      errs.mobileNumber = "Please verify your mobile number with WhatsApp OTP.";
     }
 
     if (!customer.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email.trim())) {
@@ -125,6 +150,21 @@ function CheckoutPage() {
       return;
     }
 
+    if (!isPhoneVerified) {
+      const cleanPhone = customer.mobileNumber.replace(/\D/g, "");
+      const finalPhone =
+        cleanPhone.length === 12 && cleanPhone.startsWith("91") ? cleanPhone.slice(2) : cleanPhone;
+      if (/^[6-9]\d{9}$/.test(finalPhone)) {
+        setIsOtpDialogOpen(true);
+        toast.info("WhatsApp verification required", {
+          description: "Please confirm your 6-digit WhatsApp code to complete your order.",
+        });
+      } else {
+        toast.error("Please enter a valid 10-digit Indian mobile number first.");
+      }
+      return;
+    }
+
     if (!validate()) {
       toast.error("Please fill in all delivery details correctly");
       return;
@@ -135,7 +175,11 @@ function CheckoutPage() {
     try {
       // 1. Submit order payload to our authoritative server endpoint
       const payload = {
-        customer,
+        customer: {
+          ...customer,
+          phoneVerified: true,
+          verifiedVia: "whatsapp",
+        },
         items: cart.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -268,12 +312,20 @@ function CheckoutPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label
-                      htmlFor="mobileNumber"
-                      className="text-xs font-medium uppercase tracking-wider"
-                    >
-                      Mobile Number (for delivery SMS) *
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor="mobileNumber"
+                        className="text-xs font-medium uppercase tracking-wider"
+                      >
+                        Mobile Number *
+                      </Label>
+                      {isPhoneVerified && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          <CheckCircle2 className="size-3 text-[#25D366]" />
+                          Verified
+                        </span>
+                      )}
+                    </div>
                     <div className="relative">
                       <span className="absolute left-3 top-2.5 text-xs text-muted-foreground font-mono">
                         +91
@@ -283,20 +335,60 @@ function CheckoutPage() {
                         type="tel"
                         maxLength={10}
                         placeholder="9876543210"
-                        className={`pl-11 font-mono text-sm ${errors.mobileNumber ? "border-destructive" : ""}`}
+                        className={`pl-11 font-mono text-sm ${
+                          isPhoneVerified
+                            ? "border-emerald-500/50 bg-emerald-500/5 text-foreground focus-visible:ring-emerald-500/30"
+                            : errors.mobileNumber
+                              ? "border-destructive"
+                              : ""
+                        }`}
                         value={customer.mobileNumber}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          setIsPhoneVerified(false);
                           setCustomer({
                             ...customer,
                             mobileNumber: e.target.value.replace(/\D/g, ""),
-                          })
-                        }
+                          });
+                        }}
                         disabled={isSubmitting}
                       />
                     </div>
                     {errors.mobileNumber && (
                       <p className="text-[0.7rem] text-destructive">{errors.mobileNumber}</p>
                     )}
+
+                    {/* WhatsApp Verification Status / Action Button */}
+                    {isPhoneVerified ? (
+                      <div className="flex items-center justify-between pt-0.5 text-[11px]">
+                        <span className="text-muted-foreground flex items-center gap-1">
+                          <WhatsAppIcon className="size-3 fill-[#25D366]" />
+                          Ready for WhatsApp order tracking
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsPhoneVerified(false);
+                            setCustomer((prev) => ({ ...prev, mobileNumber: "" }));
+                          }}
+                          className="text-muted-foreground hover:text-foreground underline cursor-pointer"
+                        >
+                          Change Number
+                        </button>
+                      </div>
+                    ) : customer.mobileNumber.length === 10 && /^[6-9]\d{9}$/.test(customer.mobileNumber) ? (
+                      <div className="pt-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIsOtpDialogOpen(true)}
+                          className="w-full h-8 text-xs font-medium border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/15 hover:border-emerald-500/60 cursor-pointer flex items-center justify-center gap-2 transition-all"
+                        >
+                          <WhatsAppIcon className="size-3.5 fill-[#25D366]" />
+                          <span>Verify with WhatsApp OTP</span>
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="space-y-1.5">
@@ -538,6 +630,16 @@ function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      <WhatsAppOtpDialog
+        open={isOtpDialogOpen}
+        onOpenChange={setIsOtpDialogOpen}
+        mobileNumber={customer.mobileNumber}
+        onVerified={handlePhoneVerified}
+        onChangeNumber={() => {
+          setIsPhoneVerified(false);
+        }}
+      />
     </div>
   );
 }

@@ -991,8 +991,13 @@ function AdminPage() {
                               <span className="font-medium text-foreground block">
                                 {ord.customer.fullName}
                               </span>
-                              <span className="text-muted-foreground text-[11px]">
+                              <span className="text-muted-foreground text-[11px] flex items-center gap-1">
                                 +91 {ord.customer.mobileNumber}
+                                {ord.customer.phoneVerified && (
+                                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                                    ✓ WA Verified
+                                  </span>
+                                )}
                               </span>
                             </TableCell>
                             <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
@@ -1200,8 +1205,13 @@ function AdminPage() {
                   </p>
                   <p className="font-medium text-foreground">{selectedOrder.customer.fullName}</p>
                   <p className="text-muted-foreground">{selectedOrder.customer.email}</p>
-                  <p className="font-mono text-muted-foreground">
+                  <p className="font-mono text-muted-foreground flex items-center gap-1.5">
                     +91 {selectedOrder.customer.mobileNumber}
+                    {selectedOrder.customer.phoneVerified && (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded font-medium">
+                        ✓ WhatsApp Verified
+                      </span>
+                    )}
                   </p>
                 </div>
 

@@ -150,7 +150,29 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
       return await handleGetMedia(request, env);
     }
 
-    // 11. Debug: Check which env vars are present in this Worker
+    // 11. WhatsApp Auth: Send OTP
+    if (pathname === "/api/auth/send-whatsapp-otp" && request.method === "POST") {
+      const { sendWhatsAppOtp } = await import("./whatsapp");
+      const body = await request.json().catch(() => ({}));
+      const result = await sendWhatsAppOtp(body.mobileNumber, env);
+      return new Response(JSON.stringify(result), {
+        status: result.success ? 200 : 400,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 12. WhatsApp Auth: Verify OTP
+    if (pathname === "/api/auth/verify-whatsapp-otp" && request.method === "POST") {
+      const { verifyWhatsAppOtp } = await import("./whatsapp");
+      const body = await request.json().catch(() => ({}));
+      const result = await verifyWhatsAppOtp(body.mobileNumber, body.otp, env);
+      return new Response(JSON.stringify(result), {
+        status: result.success ? 200 : 400,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 13. Debug: Check which env vars are present in this Worker
     if (pathname === "/api/debug/env" && request.method === "GET") {
       const g = globalThis as any;
       const reqAny = request as any;
@@ -162,6 +184,8 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
         SUPABASE_KEY: !!env?.SUPABASE_KEY,
         SUPABASE_BUCKET: !!env?.SUPABASE_BUCKET,
         CASHFREE_APP_ID: !!env?.CASHFREE_APP_ID,
+        WHATSAPP_TOKEN: !!env?.WHATSAPP_TOKEN,
+        WHATSAPP_PHONE_NUMBER_ID: !!env?.WHATSAPP_PHONE_NUMBER_ID,
       };
       const diagnostics = {
         hasPassedEnv: !!passedEnv,

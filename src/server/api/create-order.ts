@@ -130,6 +130,14 @@ export async function handleCreateOrder(
     updatedAt: new Date().toISOString(),
   });
 
+  // 7. Save / update customer profile asynchronously for seamless future checkout
+  try {
+    const { saveCustomerProfile } = await import("../whatsapp");
+    await saveCustomerProfile(validatedCustomer, env);
+  } catch {
+    /* ignore profile caching error */
+  }
+
   return {
     success: true,
     orderId,
