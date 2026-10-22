@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aurelle-project",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "FIREBASE_PROJECT_ID": "velora-f972a",
+    "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@velora-f972a.iam.gserviceaccount.com"
+  }
+}

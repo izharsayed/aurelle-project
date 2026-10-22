@@ -107,12 +107,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && Array.isArray(data.products) && data.products.length > 0) {
-            setProducts(data.products);
-            try {
-              window.localStorage.setItem(CATALOG_KEY, JSON.stringify(data.products));
-            } catch {
-              /* ignore */
-            }
+            setProducts((prev) => {
+              const serverIds = new Set(data.products.map((p: Product) => p.id));
+              // Preserve any custom products added locally that the server hasn't returned yet
+              const localCustoms = prev.filter(
+                (p) => !serverIds.has(p.id) && p.id.startsWith("p-custom-"),
+              );
+              const merged = [...localCustoms, ...data.products];
+              try {
+                window.localStorage.setItem(CATALOG_KEY, JSON.stringify(merged));
+              } catch {
+                /* ignore */
+              }
+              return merged;
+            });
           }
         })
         .catch(() => {

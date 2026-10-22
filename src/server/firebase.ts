@@ -403,11 +403,18 @@ let isMock = true;
 export function initFirebase(env?: any) {
   if (activeDb && !isMock) return { db: activeDb, isMock };
 
-  const projectId = env?.FIREBASE_PROJECT_ID || process.env["FIREBASE_PROJECT_ID"];
-  const clientEmail = env?.FIREBASE_CLIENT_EMAIL || process.env["FIREBASE_CLIENT_EMAIL"];
-  let privateKey = env?.FIREBASE_PRIVATE_KEY || process.env["FIREBASE_PRIVATE_KEY"];
+  const g = globalThis as any;
+  const effectiveEnv =
+    env ||
+    g.__env__ ||
+    (typeof process !== "undefined" ? process.env : undefined) ||
+    g;
 
-  if (privateKey) {
+  const projectId = effectiveEnv?.FIREBASE_PROJECT_ID || g?.FIREBASE_PROJECT_ID;
+  const clientEmail = effectiveEnv?.FIREBASE_CLIENT_EMAIL || g?.FIREBASE_CLIENT_EMAIL;
+  let privateKey = effectiveEnv?.FIREBASE_PRIVATE_KEY || g?.FIREBASE_PRIVATE_KEY;
+
+  if (privateKey && typeof privateKey === "string") {
     privateKey = privateKey.replace(/\\n/g, "\n");
   }
 

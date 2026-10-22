@@ -3,22 +3,27 @@ import type { Product } from "@/data/types";
 import { getDb } from "../firebase";
 
 function getSupabaseConfig(env?: any) {
+  const g = globalThis as any;
+  const effectiveEnv =
+    env ||
+    g.__env__ ||
+    (typeof process !== "undefined" ? process.env : undefined) ||
+    g;
+
   const url = (
-    env?.SUPABASE_URL ||
-    process.env["SUPABASE_URL"] ||
+    effectiveEnv?.SUPABASE_URL ||
+    g?.SUPABASE_URL ||
     ""
   ).replace(/\/+$/, "");
 
   const key =
-    env?.SUPABASE_KEY ||
-    process.env["SUPABASE_KEY"] ||
-    env?.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
-    env?.SUPABASE_ANON_KEY ||
-    process.env["SUPABASE_ANON_KEY"] ||
+    effectiveEnv?.SUPABASE_KEY ||
+    effectiveEnv?.SUPABASE_SERVICE_ROLE_KEY ||
+    effectiveEnv?.SUPABASE_ANON_KEY ||
+    g?.SUPABASE_KEY ||
     "";
 
-  const bucket = env?.SUPABASE_BUCKET || process.env["SUPABASE_BUCKET"] || "products";
+  const bucket = effectiveEnv?.SUPABASE_BUCKET || g?.SUPABASE_BUCKET || "products";
 
   return { url, key, bucket };
 }

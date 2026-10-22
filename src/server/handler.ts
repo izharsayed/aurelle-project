@@ -4,6 +4,19 @@ import { handleVerifyOrder } from "./api/verify-order";
 import { handleGetAdminOrders, handleUpdateOrderStatus } from "./api/admin-orders";
 import { seedAuthoritativeCatalog } from "./catalog";
 
+export function resolveEnv(passedEnv?: any, request?: Request): any {
+  const g = globalThis as any;
+  const reqAny = request as any;
+  return (
+    passedEnv ||
+    reqAny?.runtime?.cloudflare?.env ||
+    reqAny?.env ||
+    g.__env__ ||
+    (typeof process !== "undefined" ? process.env : undefined) ||
+    g
+  );
+}
+
 // Auto-seed catalog on first request (pass env so Firebase is properly initialized)
 let seedAttempted = false;
 function triggerCatalogSeed(env?: any) {
@@ -16,7 +29,7 @@ function triggerCatalogSeed(env?: any) {
 /**
  * Unified Server Request Handler for all API routes
  */
-export async function handleApiRoute(request: Request, env?: any): Promise<Response | null> {
+export async function handleApiRoute(request: Request, passedEnv?: any): Promise<Response | null> {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
@@ -24,6 +37,7 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
     return null;
   }
 
+  const env = resolveEnv(passedEnv, request);
   triggerCatalogSeed(env);
 
   const jsonHeaders = {
@@ -138,16 +152,27 @@ export async function handleApiRoute(request: Request, env?: any): Promise<Respo
 
     // 11. Debug: Check which env vars are present in this Worker
     if (pathname === "/api/debug/env" && request.method === "GET") {
+      const g = globalThis as any;
+      const reqAny = request as any;
       const envCheck: Record<string, boolean> = {
-        FIREBASE_PROJECT_ID: !!(env as any)?.FIREBASE_PROJECT_ID || !!process.env["FIREBASE_PROJECT_ID"],
-        FIREBASE_CLIENT_EMAIL: !!(env as any)?.FIREBASE_CLIENT_EMAIL || !!process.env["FIREBASE_CLIENT_EMAIL"],
-        FIREBASE_PRIVATE_KEY: !!(env as any)?.FIREBASE_PRIVATE_KEY || !!process.env["FIREBASE_PRIVATE_KEY"],
-        SUPABASE_URL: !!(env as any)?.SUPABASE_URL || !!process.env["SUPABASE_URL"],
-        SUPABASE_KEY: !!(env as any)?.SUPABASE_KEY || !!process.env["SUPABASE_KEY"],
-        SUPABASE_BUCKET: !!(env as any)?.SUPABASE_BUCKET || !!process.env["SUPABASE_BUCKET"],
-        CASHFREE_APP_ID: !!(env as any)?.CASHFREE_APP_ID || !!process.env["CASHFREE_APP_ID"],
+        FIREBASE_PROJECT_ID: !!env?.FIREBASE_PROJECT_ID,
+        FIREBASE_CLIENT_EMAIL: !!env?.FIREBASE_CLIENT_EMAIL,
+        FIREBASE_PRIVATE_KEY: !!env?.FIREBASE_PRIVATE_KEY,
+        SUPABASE_URL: !!env?.SUPABASE_URL,
+        SUPABASE_KEY: !!env?.SUPABASE_KEY,
+        SUPABASE_BUCKET: !!env?.SUPABASE_BUCKET,
+        CASHFREE_APP_ID: !!env?.CASHFREE_APP_ID,
       };
-      return new Response(JSON.stringify({ env: envCheck }), { status: 200, headers: jsonHeaders });
+      const diagnostics = {
+        hasPassedEnv: !!passedEnv,
+        hasGlobalEnv: !!g.__env__,
+        hasReqCloudflareEnv: !!reqAny?.runtime?.cloudflare?.env,
+        hasProcessEnv: typeof process !== "undefined" && !!process.env,
+        keysInPassedEnv: passedEnv ? Object.keys(passedEnv) : [],
+        keysInGlobalEnv: g.__env__ ? Object.keys(g.__env__) : [],
+        keysInReqEnv: reqAny?.runtime?.cloudflare?.env ? Object.keys(reqAny.runtime.cloudflare.env) : [],
+      };
+      return new Response(JSON.stringify({ env: envCheck, diagnostics }), { status: 200, headers: jsonHeaders });
     }
 
     // Unhandled /api route
