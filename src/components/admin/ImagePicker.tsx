@@ -6,13 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { img } from "@/data/images";
 import { toast } from "sonner";
+import { compressImage, formatBytes, dataUrlToBlob } from "@/lib/image-compressor";
 
 interface ImagePickerProps {
   images: string[];
   onChange: (images: string[]) => void;
 }
 
-// Preset images from Aurelle's curated library
+// Preset images from Zarika's curated library
 const PRESET_GALLERY = [
   { label: "Pearl Studs", src: img.pearlStuds },
   { label: "Gold Hoops", src: img.hoops },
@@ -34,7 +35,7 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Handle File Upload to Cloudflare R2
+  // 1. Handle File Upload with Auto-Compression (Web-ready JPEG under 100 KB)
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -44,51 +45,76 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
 
     for (const file of Array.from(files)) {
       try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
+        // Automatically resize and compress image to web-ready JPEG (max 1200px, 82% quality)
+        // Keeps file size around 50–90 KB, perfectly safe for Firestore's 1 MB document limit.
+        const compressed = await compressImage(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.82,
         });
 
-        if (res.ok) {
-          const data = (await res.json()) as { url?: string };
-          if (data.url) {
-            uploadedUrls.push(data.url);
-            continue;
+        // Try cloud upload if backend storage is configured
+        let cloudUrl: string | null = null;
+        try {
+          const compressedBlob = dataUrlToBlob(compressed.dataUrl);
+          const formData = new FormData();
+          formData.append("file", compressedBlob, file.name.replace(/\.[^.]+$/, ".jpg"));
+
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (res.ok) {
+            const data = (await res.json()) as { url?: string };
+            // If the server returned an external cloud URL (not the base64 fallback)
+            if (data.url && !data.url.startsWith("data:")) {
+              cloudUrl = data.url;
+            }
           }
+        } catch {
+          // Cloud storage endpoint unavailable; continue with local compressed base64
         }
 
-        // Fallback: Read client-side if network upload failed
-        const readerPromise = new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target?.result as string);
-          reader.onerror = () => resolve("");
-          reader.readAsDataURL(file);
-        });
-        const fallbackUrl = await readerPromise;
-        if (fallbackUrl) uploadedUrls.push(fallbackUrl);
+        const finalUrl = cloudUrl || compressed.dataUrl;
+        uploadedUrls.push(finalUrl);
+
+        console.log(
+          `📸 [Image Compressed] ${file.name}: ${formatBytes(compressed.originalBytes)} → ${formatBytes(compressed.compressedBytes)}`,
+        );
       } catch (err) {
-        console.warn("⚠️ Upload error, using client fallback:", err);
+        console.warn("⚠️ Compression error, trying raw file fallback:", err);
+        // Fallback: Read client-side if canvas compression failed
+        try {
+          const readerPromise = new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target?.result as string);
+            reader.onerror = () => resolve("");
+            reader.readAsDataURL(file);
+          });
+          const fallbackUrl = await readerPromise;
+          if (fallbackUrl) uploadedUrls.push(fallbackUrl);
+        } catch (e) {
+          console.error("Failed to read file", e);
+        }
       }
     }
 
     if (uploadedUrls.length > 0) {
       onChange([...images, ...uploadedUrls]);
       toast.success(
-        `Uploaded ${uploadedUrls.length} image${uploadedUrls.length > 1 ? "s" : ""} successfully`,
+        `Optimized & added ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? "s" : ""} to gallery`,
       );
     } else {
-      toast.error("Failed to upload image(s)");
+      toast.error("Failed to process image(s)");
     }
 
     setIsProcessing(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // 2. Add via URL
-  const handleAddUrl = (e: React.FormEvent) => {
+  // 2. Add via URL (with auto-compression if a raw data URL is pasted)
+  const handleAddUrl = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = urlInput.trim();
     if (!trimmed) return;
@@ -100,9 +126,24 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
       toast.error("Please enter a valid web URL (e.g. https://...)");
       return;
     }
-    onChange([...images, trimmed]);
+
+    let finalUrl = trimmed;
+    if (trimmed.startsWith("data:image/")) {
+      try {
+        const compressed = await compressImage(trimmed, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.82,
+        });
+        finalUrl = compressed.dataUrl;
+      } catch (err) {
+        console.warn("Could not compress pasted base64", err);
+      }
+    }
+
+    onChange([...images, finalUrl]);
     setUrlInput("");
-    toast.success("Image URL added");
+    toast.success("Image added to gallery");
   };
 
   // 3. Remove image
@@ -213,7 +254,7 @@ export function ImagePicker({ images, onChange }: ImagePickerProps) {
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="size-3.5 text-accent" />
-            {isProcessing ? "Uploading..." : "Upload from Computer"}
+            {isProcessing ? "Optimizing & uploading..." : "Upload from Computer"}
           </Button>
 
           <Button

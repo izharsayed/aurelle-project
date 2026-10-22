@@ -118,7 +118,7 @@ export function AddProductDialog({ open, onOpenChange, onAdd }: AddProductDialog
       description: description.trim() || `${name.trim()} crafted in fine detail.`,
       longDescription: description.trim() || `${name.trim()} crafted in fine detail.`,
       material: material.trim(),
-      care: "Wear last, remove first. Keep away from water and perfume. Store in the Aurelle pouch.",
+      care: "Wear last, remove first. Keep away from water and perfume. Store in the Zarika pouch.",
       colors: [
         { name: "Gold", hex: "#C8A96A" },
         { name: "Rose Gold", hex: "#D9A6A0" },
