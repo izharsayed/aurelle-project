@@ -248,8 +248,27 @@ aurelle-project/
 
 ---
 
-## 7. How To Prompt Any Future AI Agent
+## 7. WhatsApp Customer Login & OTP Verification Architecture
+
+- **Server Implementation**: [`src/server/whatsapp.ts`](file:///d:/PROJECTS/aurelle-project/src/server/whatsapp.ts)
+  - Endpoints:
+    - `POST /api/auth/send-whatsapp-otp`: Generates cryptographically secure 6-digit OTP, enforces a 25-second resend cooldown and 5-minute expiry, caches in memory & Firestore (`otp_verifications` collection).
+    - `POST /api/auth/verify-whatsapp-otp`: Validates the code. When verified, queries Firestore for saved customer profile (`customers` collection) and returns it for instant address auto-fill.
+  - Providers supported:
+    - **Meta WhatsApp Cloud API**: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_NAME`.
+    - **Indian Gateway**: `WHATSAPP_GATEWAY_URL`, `WHATSAPP_API_KEY` (AiSensy, Gupshup, Fast2SMS, MSG91).
+    - **Sandbox Mode (Active by default)**: When no API credentials are set, returns `sandbox: true` and `debugOtp`, also accepting `123456` for instant zero-config testing.
+- **Client UI**:
+  - [`src/components/checkout/WhatsAppOtpDialog.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/checkout/WhatsAppOtpDialog.tsx): Luxury modal with emerald WhatsApp branding, 6 individual digit inputs with auto-advance, backspace handling, paste support, 25s countdown timer, and a 1-click test code auto-fill button.
+  - [`src/routes/checkout.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/checkout.tsx): Inline "Verify with WhatsApp OTP" button on the mobile number field, locks number upon verification, displays a green "✓ Verified" badge, and auto-fills returning customer delivery details.
+- **Admin Integration**:
+  - [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx): Orders list and order details dialog display a green `✓ WhatsApp Verified` tag beside customer phone numbers.
+
+---
+
+## 8. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
