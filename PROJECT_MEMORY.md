@@ -268,14 +268,14 @@ aurelle-project/
 
 ---
 
-## 8. Luxury Invoice & Packing Slip Generator
+## 8. Luxury Invoice & Packing Slip Generator (with 4x6 Thermal Label)
 
 - **Component**: [`src/components/admin/OrderPackingSlip.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/OrderPackingSlip.tsx)
 - **Features**:
-  - Publication-grade A4 / Letter printable layout with bespoke Zarika Fine Jewelry atelier branding and Jaipur craftsmanship hallmarks.
-  - Complete order breakdown: Order ID, customer shipping destination, itemized jewelry table with photos, SKU, finish, quantity, unit price, subtotal, and complimentary insured shipping.
-  - Hallmark Authenticity Guarantee and Jewelry Care Card embedded at the bottom.
-  - Dedicated `@media print` CSS engine: Hides all UI modals, buttons, and navigation, printing only the clean invoice on physical paper or PDF.
+  - **Dual Format Switcher**:
+    - **Standard A4 Invoice**: Full-page luxury tax invoice & packing slip with itemized pieces table, thumbnails, pricing breakdown, Jaipur artisan authenticity guarantee, and jewelry care instructions.
+    - **Thermal 4"x6" Label (100mm x 150mm)**: High-contrast dispatch sticker engineered for thermal courier label printers (Shiprocket, Delhivery, BlueDart, DTDC). Features high-contrast delivery destination box, large bold PIN code, simulated courier tracking barcode (`*ORDER_ID*`), parcel items manifest, return atelier address, and fragile jewelry handling disclaimer.
+  - **Isolated Iframe Print Engine**: Replaces native `@media print` dialog queries with a hidden iframe DOM printer that clones application stylesheets. Eliminates all clipping, scroll-lock truncation, and height cutting caused by browser dialog wrappers.
 - **Admin Integration**:
   - Accessible via a dedicated `Printer` icon button in the admin orders table and a **"Print Packing Slip"** button inside the Order Details dialog in [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx).
 
