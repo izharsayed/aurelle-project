@@ -266,9 +266,41 @@ aurelle-project/
 
 ---
 
-## 8. How To Prompt Any Future AI Agent
+---
+
+## 8. Luxury Invoice & Packing Slip Generator
+
+- **Component**: [`src/components/admin/OrderPackingSlip.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/OrderPackingSlip.tsx)
+- **Features**:
+  - Publication-grade A4 / Letter printable layout with bespoke Zarika Fine Jewelry atelier branding and Jaipur craftsmanship hallmarks.
+  - Complete order breakdown: Order ID, customer shipping destination, itemized jewelry table with photos, SKU, finish, quantity, unit price, subtotal, and complimentary insured shipping.
+  - Hallmark Authenticity Guarantee and Jewelry Care Card embedded at the bottom.
+  - Dedicated `@media print` CSS engine: Hides all UI modals, buttons, and navigation, printing only the clean invoice on physical paper or PDF.
+- **Admin Integration**:
+  - Accessible via a dedicated `Printer` icon button in the admin orders table and a **"Print Packing Slip"** button inside the Order Details dialog in [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx).
+
+---
+
+## 9. OpenGraph SEO, WhatsApp Link Previews & Social Sharing
+
+- **Asset**: `public/og-image.jpg` (1200x630px high-resolution luxury jewelry editorial image).
+- **Global Metadata ([`src/routes/__root.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/__root.tsx))**:
+  - Full OpenGraph (`og:title`, `og:description`, `og:image`, `og:site_name`, `og:type: website`, `og:locale: en_IN`).
+  - Twitter Card `summary_large_image` tags.
+  - Schema.org JSON-LD `JewelryStore` structured data for Google rich snippets.
+- **Product-Specific OpenGraph ([`src/routes/product.$slug.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/product.$slug.tsx))**:
+  - Dynamic `og:image` pointing to the exact jewelry piece's high-res photo.
+  - Dynamic pricing and stock availability metadata.
+  - Schema.org JSON-LD `Product` schema with pricing and in-stock offers.
+- **1-Click WhatsApp Sharing ([`src/components/shop/ProductInfo.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/shop/ProductInfo.tsx))**:
+  - Instant **"Share on WhatsApp"** button on every product page that generates a beautifully pre-formatted WhatsApp message with piece title, price, and direct link.
+
+---
+
+## 10. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
 
