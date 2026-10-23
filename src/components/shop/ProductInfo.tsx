@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus, Share2, ShoppingBag, Truck } from "lucide-react";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
+import { WhatsAppIcon } from "@/components/checkout/WhatsAppOtpDialog";
 import { ProductBadge } from "./ProductBadge";
 import { Stars } from "@/components/site/Stars";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,13 @@ export function ProductInfo({ product }: { product: Product }) {
     } catch {
       /* dismissed */
     }
+  };
+
+  const shareOnWhatsApp = () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const price = product.salePrice ? formatPrice(product.salePrice) : formatPrice(product.price);
+    const text = `Look at this stunning piece from Zarika Fine Jewelry!\n\n✨ *${product.name}* (${price})\n${url}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
@@ -184,7 +192,17 @@ export function ProductInfo({ product }: { product: Product }) {
           >
             {isWishlisted(product.id) ? "Saved to wishlist" : "Add to wishlist"}
           </Button>
-          <Button variant="line" size="brand" onClick={share} aria-label="Share this product">
+          <Button
+            variant="line"
+            size="brand"
+            onClick={shareOnWhatsApp}
+            aria-label="Share on WhatsApp"
+            title="Share with friends on WhatsApp"
+            className="hover:border-emerald-500/50 hover:text-[#25D366] transition-colors"
+          >
+            <WhatsAppIcon className="size-4 fill-current" />
+          </Button>
+          <Button variant="line" size="brand" onClick={share} aria-label="Share this product" title="Copy link / share">
             {shared ? <Check aria-hidden /> : <Share2 aria-hidden strokeWidth={1.5} />}
           </Button>
         </div>

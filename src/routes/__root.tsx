@@ -84,15 +84,59 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Zarika Fine Jewelry — Handcrafted Luxury & Elegance" },
+      { title: "Zarika Fine Jewelry — Handcrafted Luxury & Jaipur Heritage" },
       {
         name: "description",
         content:
-          "Hand-finished fine artificial jewelry in 18K gold and rhodium plating. Earrings, necklaces, bangles and bridal sets, ordered over WhatsApp.",
+          "Hand-finished fine artificial jewelry in 18K gold and rhodium plating. Kundan chokers, necklaces, bangles and heirloom bridal sets.",
       },
       { name: "author", content: "Zarika Fine Jewelry" },
+      { property: "og:site_name", content: "Zarika Fine Jewelry" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_IN" },
+      { property: "og:title", content: "Zarika Fine Jewelry — Handcrafted Luxury & Jaipur Heritage" },
+      {
+        property: "og:description",
+        content:
+          "Hand-finished fine artificial jewelry in 18K gold and rhodium plating. Kundan chokers, necklaces, bangles and heirloom bridal sets.",
+      },
+      { property: "og:image", content: "https://aurelle-project.izharsayed31.workers.dev/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Zarika Fine Jewelry Signature Collection" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Zarika Fine Jewelry — Handcrafted Luxury" },
+      {
+        name: "twitter:description",
+        content:
+          "Hand-finished fine artificial jewelry in 18K gold and rhodium plating. Crafted with Jaipur artisan heritage.",
+      },
+      { name: "twitter:image", content: "https://aurelle-project.izharsayed31.workers.dev/og-image.jpg" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "JewelryStore",
+          name: "Zarika Fine Jewelry",
+          url: "https://aurelle-project.izharsayed31.workers.dev",
+          logo: "https://aurelle-project.izharsayed31.workers.dev/favicon.svg",
+          image: "https://aurelle-project.izharsayed31.workers.dev/og-image.jpg",
+          description:
+            "Handcrafted luxury artificial jewelry, bridal suites, kundan necklaces, and 18K gold plated heirloom jewelry.",
+          priceRange: "₹₹",
+          telephone: "+919876543210",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Johari Bazaar Heritage Lane",
+            addressLocality: "Jaipur",
+            addressRegion: "Rajasthan",
+            postalCode: "302003",
+            addressCountry: "IN",
+          },
+        }),
+      },
     ],
     links: [
       {

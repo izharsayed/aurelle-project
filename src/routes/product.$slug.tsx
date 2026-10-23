@@ -29,12 +29,61 @@ export const Route = createFileRoute("/product/$slug")({
     }
     const { product } = loaderData;
     const title = `${product.name} — Zarika Fine Jewelry`;
+    const priceText = product.salePrice
+      ? `₹${product.salePrice.toLocaleString("en-IN")}`
+      : `₹${product.price.toLocaleString("en-IN")}`;
+    const desc = `${product.name} (${priceText}) • 18K Anti-Tarnish Gold Plated. ${product.description.slice(0, 140)}...`;
+
+    const firstImg = product.images?.[0] || "";
+    const isHttpUrl = firstImg.startsWith("http://") || firstImg.startsWith("https://");
+    const ogImage = isHttpUrl
+      ? firstImg
+      : firstImg && !firstImg.startsWith("data:")
+        ? `https://aurelle-project.izharsayed31.workers.dev${firstImg.startsWith("/") ? "" : "/"}${firstImg}`
+        : "https://aurelle-project.izharsayed31.workers.dev/og-image.jpg";
+
     return {
       meta: [
         { title },
-        { name: "description", content: product.description },
+        { name: "description", content: desc },
+        { property: "og:site_name", content: "Zarika Fine Jewelry" },
+        { property: "og:type", content: "product" },
         { property: "og:title", content: title },
-        { property: "og:description", content: product.description },
+        { property: "og:description", content: desc },
+        { property: "og:image", content: ogImage },
+        { property: "og:image:alt", content: product.name },
+        { property: "og:price:amount", content: String(product.salePrice || product.price) },
+        { property: "og:price:currency", content: "INR" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
+        { name: "twitter:image", content: ogImage },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            image: [ogImage],
+            description: product.description,
+            sku: product.sku,
+            brand: {
+              "@type": "Brand",
+              name: "Zarika Fine Jewelry",
+            },
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "INR",
+              price: product.salePrice || product.price,
+              availability: product.inStock
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+              url: `https://aurelle-project.izharsayed31.workers.dev/product/${product.slug}`,
+            },
+          }),
+        },
       ],
     };
   },

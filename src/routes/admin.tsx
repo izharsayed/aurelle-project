@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Package,
   Plus,
+  Printer,
   RefreshCw,
   Search,
   Settings,
@@ -30,6 +31,7 @@ import {
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
 import { AddProductDialog } from "@/components/admin/AddProductDialog";
+import { OrderPackingSlip } from "@/components/admin/OrderPackingSlip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -129,6 +131,7 @@ function AdminPage() {
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [slipOrder, setSlipOrder] = useState<Order | null>(null);
 
   const fetchAdminOrders = async () => {
     setOrdersLoading(true);
@@ -1048,14 +1051,25 @@ function AdminPage() {
                               </Select>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedOrder(ord)}
-                                className="text-xs text-gold hover:text-gold/80"
-                              >
-                                Details
-                              </Button>
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setSlipOrder(ord)}
+                                  title="Print Luxury Packing Slip"
+                                  className="size-7 text-muted-foreground hover:text-gold cursor-pointer"
+                                >
+                                  <Printer className="size-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setSelectedOrder(ord)}
+                                  className="text-xs text-gold hover:text-gold/80 cursor-pointer"
+                                >
+                                  Details
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
@@ -1184,16 +1198,28 @@ function AdminPage() {
                       Placed on {new Date(selectedOrder.createdAt).toLocaleString("en-IN")}
                     </DialogDescription>
                   </div>
-                  <Badge
-                    variant={
-                      selectedOrder.payment.status === "SUCCESS" || selectedOrder.status === "PAID"
-                        ? "default"
-                        : "secondary"
-                    }
-                    className="uppercase tracking-wider text-xs"
-                  >
-                    Payment: {selectedOrder.payment.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSlipOrder(selectedOrder)}
+                      className="border-gold/40 text-gold hover:bg-gold/10 text-xs flex items-center gap-1.5 h-7 cursor-pointer"
+                    >
+                      <Printer className="size-3.5" />
+                      <span>Print Packing Slip</span>
+                    </Button>
+                    <Badge
+                      variant={
+                        selectedOrder.payment.status === "SUCCESS" || selectedOrder.status === "PAID"
+                          ? "default"
+                          : "secondary"
+                      }
+                      className="uppercase tracking-wider text-xs"
+                    >
+                      Payment: {selectedOrder.payment.status}
+                    </Badge>
+                  </div>
                 </div>
               </DialogHeader>
 
@@ -1340,6 +1366,15 @@ function AdminPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Luxury Packing Slip & Tax Invoice Printable Modal */}
+      <OrderPackingSlip
+        order={slipOrder}
+        open={!!slipOrder}
+        onOpenChange={(open) => {
+          if (!open) setSlipOrder(null);
+        }}
+      />
     </div>
   );
 }
