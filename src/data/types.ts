@@ -166,6 +166,9 @@ export interface ShippingDetails {
   trackingUrl?: string | undefined;
   dispatchedAt?: string | undefined;
   estimatedDelivery?: string | undefined;
+  labelUrl?: string | undefined;
+  shiprocketOrderId?: string | undefined;
+  shiprocketShipmentId?: string | undefined;
 }
 
 export interface PaymentRecord {

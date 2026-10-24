@@ -283,6 +283,48 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
       });
     }
 
+    // 22. Shipping: Generate AWB (Shiprocket / Sandbox Simulator)
+    if (pathname === "/api/admin/shipping/generate-awb" && request.method === "POST") {
+      const { generateShippingAwb } = await import("./shipping");
+      const body = await request.json().catch(() => ({}));
+      const result = await generateShippingAwb(body, env);
+      return new Response(JSON.stringify(result), {
+        status: result.success ? 200 : 400,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 23. Shipping: Manual Courier Dispatch
+    if (pathname === "/api/admin/shipping/manual-dispatch" && request.method === "POST") {
+      const { manualCourierDispatch } = await import("./shipping");
+      const body = await request.json().catch(() => ({}));
+      const shippingDetails = body.shippingDetails || {
+        courierName: body.courierName || "Courier",
+        trackingNumber: body.trackingNumber || "",
+        trackingUrl: body.trackingUrl,
+        estimatedDelivery: body.estimatedDelivery,
+        notes: body.notes,
+      };
+
+      if (!body.orderId || !shippingDetails.trackingNumber) {
+        return new Response(JSON.stringify({ error: "Missing orderId or trackingNumber" }), {
+          status: 400,
+          headers: jsonHeaders,
+        });
+      }
+
+      const result = await manualCourierDispatch(
+        body.orderId,
+        shippingDetails,
+        Boolean(body.sendWhatsApp),
+        env,
+      );
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
     // 15. Debug: Check which env vars are present in this Worker
     if (pathname === "/api/debug/env" && request.method === "GET") {
       const g = globalThis as any;

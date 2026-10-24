@@ -36,6 +36,7 @@ import { OrderPackingSlip } from "@/components/admin/OrderPackingSlip";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { CouponsManager } from "@/components/admin/CouponsManager";
 import { WhatsAppNotificationDialog } from "@/components/admin/WhatsAppNotificationDialog";
+import { CourierDispatchDialog } from "@/components/admin/CourierDispatchDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,6 +138,7 @@ function AdminPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [slipOrder, setSlipOrder] = useState<Order | null>(null);
   const [waAlertOrder, setWaAlertOrder] = useState<Order | null>(null);
+  const [shippingOrder, setShippingOrder] = useState<Order | null>(null);
 
   const fetchAdminOrders = async () => {
     setOrdersLoading(true);
@@ -1062,9 +1064,38 @@ function AdminPage() {
                                   <SelectItem value="CANCELLED">CANCELLED</SelectItem>
                                 </SelectContent>
                               </Select>
+                              {ord.shippingDetails && (
+                                <a
+                                  href={
+                                    ord.shippingDetails.trackingUrl ||
+                                    `https://www.google.com/search?q=${encodeURIComponent(
+                                      `${ord.shippingDetails.courierName} tracking ${ord.shippingDetails.trackingNumber}`,
+                                    )}`
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[10px] text-accent hover:underline flex items-center gap-1 font-mono pt-1 max-w-[130px] truncate"
+                                  title={`Track on ${ord.shippingDetails.courierName}`}
+                                >
+                                  <Truck className="size-2.5 shrink-0" />
+                                  <span className="truncate">
+                                    {ord.shippingDetails.courierName}:{" "}
+                                    {ord.shippingDetails.trackingNumber}
+                                  </span>
+                                </a>
+                              )}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setShippingOrder(ord)}
+                                  title="Courier Logistics & AWB Dispatch"
+                                  className="size-7 text-accent hover:bg-accent/15 hover:text-accent cursor-pointer"
+                                >
+                                  <Truck className="size-3.5" />
+                                </Button>
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -1231,6 +1262,16 @@ function AdminPage() {
                     </DialogDescription>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShippingOrder(selectedOrder)}
+                      className="border-accent/40 text-accent hover:bg-accent/10 text-xs flex items-center gap-1.5 h-7 cursor-pointer"
+                    >
+                      <Truck className="size-3.5" />
+                      <span>Ship Courier</span>
+                    </Button>
                     <Button
                       type="button"
                       variant="outline"
@@ -1456,6 +1497,16 @@ function AdminPage() {
           if (!open) setWaAlertOrder(null);
         }}
         onOrderUpdated={fetchAdminOrders}
+      />
+
+      {/* Courier Logistics & AWB Generation Modal */}
+      <CourierDispatchDialog
+        order={shippingOrder}
+        open={Boolean(shippingOrder)}
+        onOpenChange={(open) => {
+          if (!open) setShippingOrder(null);
+        }}
+        onDispatched={fetchAdminOrders}
       />
     </div>
   );

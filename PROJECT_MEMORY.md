@@ -373,11 +373,32 @@ aurelle-project/
 
 ---
 
-## 13. How To Prompt Any Future AI Agent
+---
+
+## 13. Multi-Courier Logistics Hub & Shiprocket Integration
+
+- **Architecture**: Unified logistics dispatcher supporting automated Shiprocket API integration, high-fidelity Sandbox / Test Mode simulator, and quick manual carrier entry for Indian logistics partners (Delhivery, BlueDart, DTDC, India Post, etc.).
+- **Logistics Engine ([`src/server/shipping.ts`](file:///d:/PROJECTS/aurelle-project/src/server/shipping.ts))**:
+  - **Live Shiprocket REST API**: Authenticates with Shiprocket API (`/v1/external/auth/login`), pushes ad-hoc custom package manifests, requests courier assignment, and retrieves live AWB numbers.
+  - **High-Fidelity Sandbox Simulator**: Runs when `SHIPROCKET_EMAIL` / `SHIPROCKET_PASSWORD` are not configured or when test mode is enabled. Generates carrier-accurate test AWBs (e.g. `DL...IN` for Delhivery, `BD...IN` for BlueDart, `DT...IN` for DTDC, `EM...IN` for Speed Post) and live direct tracking links.
+  - **Manual Courier Dispatch**: Allows immediate entry of tracking numbers for offline or third-party shipments, auto-generating the appropriate carrier tracking URL (`getCourierTrackingUrl`).
+  - Automatically transitions order status to `SHIPPED`, writes `shippingDetails` to Firestore, and optionally triggers customer WhatsApp dispatch.
+- **Admin Dispatch Interface ([`src/components/admin/CourierDispatchDialog.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/CourierDispatchDialog.tsx))**:
+  - Accessible via the **Truck** icon on any order row or header in [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx).
+  - **Tab 1: Automated Dispatch (Shiprocket / Sandbox)**: Pre-fills luxury jewelry box dimensions (15 x 12 x 6 cm, 0.25 kg), courier selector (Delhivery, BlueDart, DTDC, India Post, Shiprocket Auto), sandbox toggle, and optional auto-WhatsApp notification checkbox.
+  - **Tab 2: Manual Carrier Dispatch**: Direct input for tracking AWB, carrier name, and estimated delivery timeline.
+  - Displays generated AWB with 1-click copy, live carrier tracking link, and thermal label generation link.
+- **Thermal & Invoice Integration ([`src/components/admin/OrderPackingSlip.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/OrderPackingSlip.tsx))**:
+  - Thermal 4x6 dispatch label dynamically renders assigned courier partner badge and encodes live carrier AWB into the barcode for direct warehouse scanning.
+
+---
+
+## 14. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
 
 
 
