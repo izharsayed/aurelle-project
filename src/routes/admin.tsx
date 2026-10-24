@@ -22,6 +22,7 @@ import {
   Settings,
   ShoppingBag,
   Sparkles,
+  Tag,
   Trash2,
   TrendingUp,
   Truck,
@@ -33,6 +34,7 @@ import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
 import { AddProductDialog } from "@/components/admin/AddProductDialog";
 import { OrderPackingSlip } from "@/components/admin/OrderPackingSlip";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
+import { CouponsManager } from "@/components/admin/CouponsManager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -396,6 +398,10 @@ function AdminPage() {
               <TabsTrigger value="analytics" className="gap-1.5 text-xs">
                 <Eye className="size-3.5 text-gold" />
                 Analytics
+              </TabsTrigger>
+              <TabsTrigger value="coupons" className="gap-1.5 text-xs">
+                <Tag className="size-3.5 text-gold" />
+                Coupons
               </TabsTrigger>
               <TabsTrigger value="settings" className="gap-1.5 text-xs">
                 <Settings className="size-3.5" />
@@ -1091,6 +1097,11 @@ function AdminPage() {
             <AnalyticsDashboard />
           </TabsContent>
 
+          {/* TAB 6: PROMOTIONAL COUPONS & LAUNCH VOUCHERS */}
+          <TabsContent value="coupons" className="space-y-6">
+            <CouponsManager />
+          </TabsContent>
+
           {/* TAB 4: SETTINGS */}
           <TabsContent value="settings" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
@@ -1298,6 +1309,12 @@ function AdminPage() {
                     <span>Subtotal</span>
                     <span>{formatPrice(selectedOrder.subtotal)}</span>
                   </div>
+                  {Boolean(selectedOrder.discountAmount && selectedOrder.discountAmount > 0) && (
+                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
+                      <span>Voucher Discount {selectedOrder.couponCode ? `(${selectedOrder.couponCode})` : ""}</span>
+                      <span>- {formatPrice(selectedOrder.discountAmount!)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-muted-foreground">
                     <span>Shipping</span>
                     <span>

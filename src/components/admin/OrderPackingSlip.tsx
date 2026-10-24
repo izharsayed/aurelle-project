@@ -370,6 +370,12 @@ export function OrderPackingSlip({ order, open, onOpenChange }: OrderPackingSlip
                     <span>Pieces Subtotal:</span>
                     <span className="font-mono">{formatPrice(order.subtotal)}</span>
                   </div>
+                  {Boolean(order.discountAmount && order.discountAmount > 0) && (
+                    <div className="flex justify-between text-emerald-700 font-medium">
+                      <span>Voucher Discount {order.couponCode ? `(${order.couponCode})` : ""}:</span>
+                      <span className="font-mono">- {formatPrice(order.discountAmount!)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-zinc-600">
                     <span>Insured Express Shipping:</span>
                     <span className="text-zinc-900 font-medium">

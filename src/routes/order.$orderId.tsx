@@ -44,6 +44,8 @@ interface OrderVerificationData {
     image?: string;
   }>;
   subtotal: number;
+  discountAmount?: number;
+  couponCode?: string;
   shippingAmount: number;
   address: {
     fullName: string;
@@ -271,6 +273,12 @@ function OrderStatusPage() {
                 <span>Subtotal</span>
                 <span>{formatPrice(order.subtotal)}</span>
               </div>
+              {Boolean(order.discountAmount && order.discountAmount > 0) && (
+                <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span>Voucher Discount {order.couponCode ? `(${order.couponCode})` : ""}</span>
+                  <span>- {formatPrice(order.discountAmount!)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-muted-foreground">
                 <span>Insured Shipping</span>
                 <span>

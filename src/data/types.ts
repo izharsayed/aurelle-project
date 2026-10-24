@@ -147,6 +147,8 @@ export interface Order {
   customer: CustomerDetails;
   items: OrderItem[];
   subtotal: number;
+  discountAmount?: number | undefined;
+  couponCode?: string | undefined;
   shippingAmount: number;
   totalAmount: number;
   currency: "INR";
@@ -170,3 +172,37 @@ export interface PaymentRecord {
   rawResponse?: Record<string, unknown> | undefined;
   createdAt: string;
 }
+
+// -------------------------------------------------------------
+// Discount Coupons & Promotions Types
+// -------------------------------------------------------------
+
+export type DiscountType = "PERCENTAGE" | "FLAT";
+
+export interface Coupon {
+  id: string;
+  code: string;
+  description: string;
+  discountType: DiscountType;
+  discountValue: number;
+  minOrderValue: number;
+  maxDiscountAmount?: number | undefined;
+  isActive: boolean;
+  usageCount: number;
+  usageLimit?: number | undefined;
+  expiresAt?: string | undefined;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  message: string;
+  code?: string;
+  discountType?: DiscountType;
+  discountValue?: number;
+  discountAmount: number;
+  minOrderValue?: number;
+  maxDiscountAmount?: number;
+}
+

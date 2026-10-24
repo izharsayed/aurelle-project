@@ -6,6 +6,7 @@ import { getDb } from "../firebase";
 export interface CreateOrderRequestBody {
   customer: CustomerDetails;
   items: ClientCartItemInput[];
+  couponCode?: string;
 }
 
 function generateHumanOrderId(): string {
@@ -77,7 +78,22 @@ export async function handleCreateOrder(
   // 2. Authoritative Price & Item Calculation (Never trusts client prices or totals)
   const calculation = await verifyCartAndCalculateTotals(body.items, env);
 
-  // 3. Generate Human-Friendly Order ID
+  // 3. Authoritative Coupon Validation & Discount Calculation
+  let discountAmount = 0;
+  let appliedCouponCode: string | undefined = undefined;
+
+  if (body.couponCode && body.couponCode.trim()) {
+    const { validateAndApplyCoupon } = await import("../coupons");
+    const couponResult = await validateAndApplyCoupon(body.couponCode, calculation.subtotal, env);
+    if (couponResult.valid) {
+      discountAmount = couponResult.discountAmount;
+      appliedCouponCode = couponResult.code;
+    }
+  }
+
+  const finalTotalAmount = Math.max(0, calculation.totalAmount - discountAmount);
+
+  // 4. Generate Human-Friendly Order ID
   const orderId = generateHumanOrderId();
   const db = getDb(env);
   const orderDocRef = db.collection("orders").doc(orderId);
@@ -86,15 +102,17 @@ export async function handleCreateOrder(
   const returnUrl = `${baseUrl}/order/${orderId}?cf_id={order_id}`;
   const notifyUrl = `${baseUrl}/api/payments/cashfree/webhook`;
 
-  // 4. Create internal Firebase Order with PENDING_PAYMENT
+  // 5. Create internal Firebase Order with PENDING_PAYMENT
   const initialOrder: Order = {
     id: orderId,
     orderId,
     customer: validatedCustomer,
     items: calculation.items,
     subtotal: calculation.subtotal,
+    discountAmount,
+    couponCode: appliedCouponCode,
     shippingAmount: calculation.shippingAmount,
-    totalAmount: calculation.totalAmount,
+    totalAmount: finalTotalAmount,
     currency: "INR",
     payment: {
       gateway: "cashfree",
@@ -107,10 +125,10 @@ export async function handleCreateOrder(
 
   await orderDocRef.set(initialOrder);
 
-  // 5. Create Cashfree Order to obtain payment session
+  // 6. Create Cashfree Order to obtain payment session
   const cfResult = await createCashfreeOrder({
     orderId,
-    orderAmount: calculation.totalAmount,
+    orderAmount: finalTotalAmount,
     orderCurrency: "INR",
     customer: {
       id: `cust_${validatedCustomer.mobileNumber}`,
@@ -120,17 +138,17 @@ export async function handleCreateOrder(
     },
     returnUrl,
     notifyUrl,
-    orderNote: `Zarika Jewelry Order ${orderId}`,
+    orderNote: `Zarika Jewelry Order ${orderId}${appliedCouponCode ? ` [Coupon: ${appliedCouponCode}]` : ""}`,
   });
 
-  // 6. Update internal order with gateway references
+  // 7. Update internal order with gateway references
   await orderDocRef.update({
     "payment.gatewayOrderId": cfResult.cfOrderId,
     "payment.paymentSessionId": cfResult.paymentSessionId,
     updatedAt: new Date().toISOString(),
   });
 
-  // 7. Save / update customer profile asynchronously for seamless future checkout
+  // 8. Save / update customer profile asynchronously for seamless future checkout
   try {
     const { saveCustomerProfile } = await import("../whatsapp");
     await saveCustomerProfile(validatedCustomer, env);
@@ -143,7 +161,10 @@ export async function handleCreateOrder(
     orderId,
     paymentSessionId: cfResult.paymentSessionId,
     cfOrderId: cfResult.cfOrderId,
-    totalAmount: calculation.totalAmount,
+    totalAmount: finalTotalAmount,
+    subtotal: calculation.subtotal,
+    discountAmount,
+    couponCode: appliedCouponCode,
     currency: "INR",
   };
 }

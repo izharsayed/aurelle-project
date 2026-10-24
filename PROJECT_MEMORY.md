@@ -321,11 +321,40 @@ aurelle-project/
 
 ---
 
-## 11. How To Prompt Any Future AI Agent
+## 11. Promotional Coupons & Discount Management System
+
+- **Architecture**: Authoritative server-side discount validation engine coupled with Cloud Firestore persistence and client-side checkout redemption.
+- **Server Engine ([`src/server/coupons.ts`](file:///d:/PROJECTS/aurelle-project/src/server/coupons.ts))**:
+  - Supports both **Percentage (%)** discounts (with optional maximum rupee cap) and **Flat Rupee (₹)** discounts.
+  - Enforces minimum order cart threshold (`minOrderValue`), usage limits (`usageLimit`), expiration dates, and active/pause toggles.
+  - Automatically seeds starter luxury vouchers on boot:
+    - `ZARIKA10`: 10% off on fine jewelry orders above ₹1,999 (Max discount ₹1,000).
+    - `ROYAL500`: ₹500 flat off on regal choker & bridal orders above ₹3,000.
+    - `WELCOME100`: ₹100 instant off on orders above ₹999.
+  - Auto-increments redemption count upon verified order completion.
+- **Authoritative Cashfree Integration ([`src/server/api/create-order.ts`](file:///d:/PROJECTS/aurelle-project/src/server/api/create-order.ts))**:
+  - Re-validates coupon codes on the server before generating Cashfree order sessions.
+  - Deducts verified discount from `order_amount` sent to Cashfree (preventing client-side price tampering).
+  - Stores `couponCode` and `discountAmount` inside the order document in Firestore.
+- **Customer Checkout UI ([`src/routes/checkout.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/checkout.tsx))**:
+  - Dedicated luxury coupon input box in Order Review with 1-click apply, real-time validation, and instant savings feedback.
+  - Clickable suggestion chips for available launch offers.
+  - Live order summary reflecting pieces subtotal, voucher deduction, and updated grand total.
+- **Admin Management Portal ([`src/components/admin/CouponsManager.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/CouponsManager.tsx))**:
+  - Located under the **"Coupons"** tab in [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx).
+  - KPI cards tracking Active Coupons, Total Redemptions, and Launch Codes.
+  - Complete CRUD modal to create/edit coupons, toggle active status with 1-click switches, set expiry dates, and delete codes.
+- **Invoice & Packing Slip Display ([`src/components/admin/OrderPackingSlip.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/OrderPackingSlip.tsx))**:
+  - Formatted luxury tax invoices and dispatch slips display applied coupon codes and discount deductions.
+
+---
+
+## 12. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
 
 
 

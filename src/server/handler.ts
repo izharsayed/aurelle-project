@@ -193,6 +193,77 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
       });
     }
 
+    // 15. Coupons: Public Active Coupons List
+    if (pathname === "/api/coupons" && request.method === "GET") {
+      const { getActiveCoupons } = await import("./coupons");
+      const coupons = await getActiveCoupons(env);
+      return new Response(JSON.stringify(coupons), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 16. Coupons: Validate Coupon Code against cart subtotal
+    if (pathname === "/api/coupons/validate" && request.method === "POST") {
+      const { validateAndApplyCoupon } = await import("./coupons");
+      const body = await request.json().catch(() => ({}));
+      const result = await validateAndApplyCoupon(body.code, Number(body.subtotal) || 0, env);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 17. Coupons Admin: Get All Coupons
+    if (pathname === "/api/admin/coupons" && request.method === "GET") {
+      const { getAllCoupons } = await import("./coupons");
+      const coupons = await getAllCoupons(env);
+      return new Response(JSON.stringify(coupons), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 18. Coupons Admin: Save (Create/Update) Coupon
+    if (pathname === "/api/admin/coupons" && request.method === "POST") {
+      const { saveCoupon } = await import("./coupons");
+      const body = await request.json().catch(() => ({}));
+      const result = await saveCoupon(body, env);
+      return new Response(JSON.stringify(result), {
+        status: result.success ? 200 : 400,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 19. Coupons Admin: Toggle Status
+    if (
+      pathname.startsWith("/api/admin/coupons/") &&
+      pathname.endsWith("/status") &&
+      request.method === "PATCH"
+    ) {
+      const code = decodeURIComponent(
+        pathname.replace("/api/admin/coupons/", "").replace("/status", ""),
+      );
+      const { toggleCouponStatus } = await import("./coupons");
+      const body = await request.json().catch(() => ({}));
+      const result = await toggleCouponStatus(code, Boolean(body.isActive), env);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 20. Coupons Admin: Delete Coupon
+    if (pathname.startsWith("/api/admin/coupons/") && request.method === "DELETE") {
+      const code = decodeURIComponent(pathname.replace("/api/admin/coupons/", ""));
+      const { deleteCoupon } = await import("./coupons");
+      const result = await deleteCoupon(code, env);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
     // 15. Debug: Check which env vars are present in this Worker
     if (pathname === "/api/debug/env" && request.method === "GET") {
       const g = globalThis as any;

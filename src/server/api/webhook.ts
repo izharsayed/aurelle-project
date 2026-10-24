@@ -122,7 +122,13 @@ export async function handleCashfreeWebhook(
     await db.collection("payments").doc(cfPaymentId).set(paymentRecord);
     console.log(`✅ [Webhook] Order ${orderId} successfully updated to PAID.`);
 
-    // 6. Send Order Confirmation Email asynchronously
+    // 6. Increment coupon usage if applied
+    if (updatedOrder.couponCode) {
+      const { incrementCouponUsage } = await import("../coupons");
+      incrementCouponUsage(updatedOrder.couponCode).catch(() => {});
+    }
+
+    // 7. Send Order Confirmation Email asynchronously
     sendOrderConfirmationEmail(updatedOrder).catch((err) => {
       console.error("⚠️ [Webhook] Email error:", err);
     });

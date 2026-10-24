@@ -31,6 +31,8 @@ export async function handleVerifyOrder(orderId: string) {
         customerEmail: order.customer.email,
         items: order.items,
         subtotal: order.subtotal,
+        discountAmount: order.discountAmount || 0,
+        couponCode: order.couponCode,
         shippingAmount: order.shippingAmount,
         address: order.customer,
         createdAt: order.createdAt,
@@ -55,6 +57,11 @@ export async function handleVerifyOrder(orderId: string) {
         updatedAt: new Date().toISOString(),
       });
 
+      if (order.couponCode) {
+        const { incrementCouponUsage } = await import("../coupons");
+        incrementCouponUsage(order.couponCode).catch(() => {});
+      }
+
       return {
         status: 200,
         body: {
@@ -67,6 +74,8 @@ export async function handleVerifyOrder(orderId: string) {
           customerEmail: order.customer.email,
           items: order.items,
           subtotal: order.subtotal,
+          discountAmount: order.discountAmount || 0,
+          couponCode: order.couponCode,
           shippingAmount: order.shippingAmount,
           address: order.customer,
           createdAt: order.createdAt,
@@ -90,6 +99,8 @@ export async function handleVerifyOrder(orderId: string) {
       customerEmail: order.customer.email,
       items: order.items,
       subtotal: order.subtotal,
+      discountAmount: order.discountAmount || 0,
+      couponCode: order.couponCode,
       shippingAmount: order.shippingAmount,
       address: order.customer,
       createdAt: order.createdAt,
