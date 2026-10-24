@@ -172,7 +172,28 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
       });
     }
 
-    // 13. Debug: Check which env vars are present in this Worker
+    // 13. Analytics: Track Event
+    if (pathname === "/api/analytics/track" && request.method === "POST") {
+      const { recordAnalyticsEvent } = await import("./analytics");
+      const body = await request.json().catch(() => ({}));
+      const result = await recordAnalyticsEvent(body, env);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 14. Analytics: Get Admin Stats
+    if (pathname === "/api/admin/analytics" && request.method === "GET") {
+      const { getAdminAnalytics } = await import("./analytics");
+      const result = await getAdminAnalytics(env);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: jsonHeaders,
+      });
+    }
+
+    // 15. Debug: Check which env vars are present in this Worker
     if (pathname === "/api/debug/env" && request.method === "GET") {
       const g = globalThis as any;
       const reqAny = request as any;

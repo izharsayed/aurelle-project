@@ -186,6 +186,20 @@ function RootComponent() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
 
+  useEffect(() => {
+    if (!isAdmin) {
+      import("@/lib/analytics").then(({ trackEvent }) => {
+        const isProduct = location.pathname.startsWith("/product/");
+        if (isProduct) {
+          const slug = location.pathname.split("/product/")[1]?.split("?")[0] || "";
+          trackEvent("product_view", { productSlug: slug });
+        } else {
+          trackEvent("page_view");
+        }
+      });
+    }
+  }, [location.pathname, isAdmin]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>

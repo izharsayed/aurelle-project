@@ -297,10 +297,35 @@ aurelle-project/
 
 ---
 
-## 10. How To Prompt Any Future AI Agent
+## 10. Store Analytics & Visitor Intelligence Engine
+
+- **Architecture**: Lightweight, privacy-first first-party telemetry system with zero third-party cookies or scripts (₹0 cost).
+- **Client Telemetry ([`src/lib/analytics.ts`](file:///d:/PROJECTS/aurelle-project/src/lib/analytics.ts))**:
+  - Automatically captures `page_view` and `product_view` upon route navigation via [`src/routes/__root.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/__root.tsx).
+  - Automatically captures `add_to_cart` via [`src/context/store-context.tsx`](file:///d:/PROJECTS/aurelle-project/src/context/store-context.tsx).
+  - Automatically captures `checkout_start` via [`src/routes/checkout.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/checkout.tsx).
+  - Excludes admin paths (`/admin`, `/api`) so store management does not skew customer traffic.
+  - Generates anonymous `sessionStorage` session IDs and detects device types (`mobile` vs `desktop`).
+  - Uses non-blocking `fetch` with `{ keepalive: true }` for zero impact on page load and browsing speed.
+- **Server Aggregation ([`src/server/analytics.ts`](file:///d:/PROJECTS/aurelle-project/src/server/analytics.ts) & [`src/server/handler.ts`](file:///d:/PROJECTS/aurelle-project/src/server/handler.ts))**:
+  - `POST /api/analytics/track`: Ingests telemetry events and updates daily counters.
+  - `GET /api/admin/analytics`: Aggregates today's metrics, full conversion funnel, top viewed products, traffic sources (WhatsApp, Instagram, Direct, Google), device breakdown, and live activity stream.
+  - Dual storage: High-speed in-memory buffer + Cloud Firestore `analytics_daily` persistence.
+- **Admin Dashboard UI ([`src/components/admin/AnalyticsDashboard.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/AnalyticsDashboard.tsx))**:
+  - Accessible via the **"Analytics"** tab in [`src/routes/admin.tsx`](file:///d:/PROJECTS/aurelle-project/src/routes/admin.tsx).
+  - **KPI Cards**: Unique Visitors, Page Impressions, Add-to-Bag Actions, Sales Conversion Rate.
+  - **Conversion Funnel**: Step-by-step visual progression (Store Visitors → Product Views → Added to Bag → Reached Checkout → Paid Orders).
+  - **Top Viewed Pieces**: Ranked jewelry pieces with impression counters and view bars.
+  - **Traffic Acquisition & Devices**: Visual distribution of traffic channels (WhatsApp, Instagram, Direct, Search) and Mobile vs Desktop split.
+  - **Live Activity Stream**: Real-time ticker showing recent shopper actions with device and source tags.
+
+---
+
+## 11. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
 
 

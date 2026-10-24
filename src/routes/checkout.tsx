@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, Lock, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { load } from "@cashfreepayments/cashfree-js";
 import { useStore } from "@/context/store-context";
@@ -77,6 +77,12 @@ function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
+
+  useEffect(() => {
+    import("@/lib/analytics").then(({ trackEvent }) => {
+      trackEvent("checkout_start");
+    });
+  }, []);
 
   const handlePhoneVerified = (profile?: Partial<CustomerDetails>) => {
     setIsPhoneVerified(true);

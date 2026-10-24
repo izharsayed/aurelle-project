@@ -218,6 +218,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       description: `${product.name}${chosenColor ? ` • ${chosenColor}` : ""}`,
     });
     setCartOpen(true);
+
+    import("@/lib/analytics").then(({ trackEvent }) => {
+      trackEvent("add_to_cart", {
+        productSlug: product.slug,
+        productName: product.name,
+      });
+    });
   }, []);
 
   const updateCartQuantity = useCallback(

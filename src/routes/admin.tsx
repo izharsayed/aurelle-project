@@ -32,6 +32,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
 import { AddProductDialog } from "@/components/admin/AddProductDialog";
 import { OrderPackingSlip } from "@/components/admin/OrderPackingSlip";
+import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -391,6 +392,10 @@ function AdminPage() {
               <TabsTrigger value="inquiries" className="gap-1.5 text-xs">
                 <MessageCircle className="size-3.5" />
                 Inquiries ({inquiries.length})
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="gap-1.5 text-xs">
+                <Eye className="size-3.5 text-gold" />
+                Analytics
               </TabsTrigger>
               <TabsTrigger value="settings" className="gap-1.5 text-xs">
                 <Settings className="size-3.5" />
@@ -1079,6 +1084,11 @@ function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* TAB 5: VISITOR ANALYTICS & CONVERSION FUNNEL */}
+          <TabsContent value="analytics" className="space-y-6">
+            <AnalyticsDashboard />
           </TabsContent>
 
           {/* TAB 4: SETTINGS */}
