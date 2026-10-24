@@ -154,9 +154,18 @@ export interface Order {
   currency: "INR";
   payment: OrderPayment;
   status: OrderStatus;
+  shippingDetails?: ShippingDetails | undefined;
   notes?: string | undefined;
   createdAt: string; // ISO 8601 string
   updatedAt: string; // ISO 8601 string
+}
+
+export interface ShippingDetails {
+  courierName: string;
+  trackingNumber: string;
+  trackingUrl?: string | undefined;
+  dispatchedAt?: string | undefined;
+  estimatedDelivery?: string | undefined;
 }
 
 export interface PaymentRecord {

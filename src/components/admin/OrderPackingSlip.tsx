@@ -440,9 +440,9 @@ export function OrderPackingSlip({ order, open, onOpenChange }: OrderPackingSlip
 
               {/* Barcode & Order Reference */}
               <div className="py-2.5 border-b-2 border-black">
-                <BarcodeSvg value={order.orderId} />
+                <BarcodeSvg value={order.shippingDetails?.trackingNumber || order.orderId} />
                 <div className="flex items-center justify-between font-mono text-[10px] font-bold mt-1 px-1">
-                  <span>DATE: {formattedDate}</span>
+                  <span>{order.shippingDetails ? `${order.shippingDetails.courierName.toUpperCase()}: ${order.shippingDetails.trackingNumber}` : `ORD: ${order.orderId}`}</span>
                   <span className="uppercase text-black">
                     {order.payment.status === "SUCCESS" || order.status === "PAID"
                       ? "[ PREPAID ONLINE ]"

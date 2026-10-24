@@ -349,11 +349,36 @@ aurelle-project/
 
 ---
 
-## 12. How To Prompt Any Future AI Agent
+## 12. Automated WhatsApp Customer Alerts & Lifecycle Messaging
+
+- **Architecture**: Dual-channel notification system featuring **1-Click Concierge Dispatch (₹0 free, zero setup)** and **Automated Cloud API Trigger** (Meta WhatsApp Cloud API / Twilio) when credentials are provided.
+- **Templates Engine ([`src/lib/whatsapp-templates.ts`](file:///d:/PROJECTS/aurelle-project/src/lib/whatsapp-templates.ts))**:
+  - **1. Order Confirmed & Payment Verified**:
+    - Royal Jaipur greeting with piece breakdown, quantities, finishes, subtotal, luxury voucher deductions, and final paid amount.
+    - Direct clickable live order tracking URL (`/order/:orderId`).
+  - **2. Order Dispatched / Shipped**:
+    - Features Courier Partner (Delhivery, BlueDart, DTDC, Shiprocket, India Post), AWB Tracking Number, auto-generated carrier tracking link, parcel manifest, and delivery destination.
+  - **3. Order Delivered & Heirloom Care Card**:
+    - Welcomes piece to the customer's jewelry collection, delivers the 4-step artisan care guide (avoiding perfumes/sprays, suede pouch storage), and invites photo reviews.
+  - **Helper Utilities**: `sanitizePhoneNumber`, `getWhatsAppDirectUrl`, and `getCourierTrackingUrl` for instant direct dispatch.
+- **Admin Concierge Modal ([`src/components/admin/WhatsAppNotificationDialog.tsx`](file:///d:/PROJECTS/aurelle-project/src/components/admin/WhatsAppNotificationDialog.tsx))**:
+  - Accessible via a dedicated green WhatsApp button on every order row in the Admin Orders table and Order Details dialog.
+  - Lifecycle stage switcher (Confirmed / Dispatched / Delivered) with courier & AWB inputs.
+  - Live editable WhatsApp message preview.
+  - **"Send via WhatsApp (1-Click Free)"**: Opens `wa.me` in a new tab directly to the customer's phone number without paying any third-party fees.
+  - **"Auto Send via Cloud API"**: Dispatches directly via Meta Cloud API using [`src/server/whatsapp-alerts.ts`](file:///d:/PROJECTS/aurelle-project/src/server/whatsapp-alerts.ts).
+- **Automated Server Dispatch ([`src/server/whatsapp-alerts.ts`](file:///d:/PROJECTS/aurelle-project/src/server/whatsapp-alerts.ts))**:
+  - Dispatched via `/api/admin/orders/send-whatsapp` or automatically when order status is updated to SHIPPED / DELIVERED in `/api/admin/orders/status`.
+  - Logs notification dispatch records in Cloud Firestore.
+
+---
+
+## 13. How To Prompt Any Future AI Agent
 
 When giving this project to another AI agent, you can simply paste this prompt:
 
 > _"Please read `PROJECT_MEMORY.md` and `AGENTS.md` before making any changes. This is **Zarika Fine Jewelry**, a luxury jewelry storefront built on TanStack Start (React 19, TypeScript, Tailwind CSS v4). Keep all design tokens, font pairings (Cormorant Garamond + Jost), and existing WhatsApp concierge/admin workflows strictly consistent."_
+
 
 
 

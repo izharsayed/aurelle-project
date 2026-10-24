@@ -35,6 +35,7 @@ import { AddProductDialog } from "@/components/admin/AddProductDialog";
 import { OrderPackingSlip } from "@/components/admin/OrderPackingSlip";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { CouponsManager } from "@/components/admin/CouponsManager";
+import { WhatsAppNotificationDialog } from "@/components/admin/WhatsAppNotificationDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -135,6 +136,7 @@ function AdminPage() {
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [slipOrder, setSlipOrder] = useState<Order | null>(null);
+  const [waAlertOrder, setWaAlertOrder] = useState<Order | null>(null);
 
   const fetchAdminOrders = async () => {
     setOrdersLoading(true);
@@ -1066,6 +1068,15 @@ function AdminPage() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  onClick={() => setWaAlertOrder(ord)}
+                                  title="Send WhatsApp Customer Alert"
+                                  className="size-7 text-[#25D366] hover:bg-[#25D366]/15 hover:text-[#25D366] cursor-pointer"
+                                >
+                                  <MessageCircle className="size-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
                                   onClick={() => setSlipOrder(ord)}
                                   title="Print Luxury Packing Slip"
                                   className="size-7 text-muted-foreground hover:text-gold cursor-pointer"
@@ -1224,6 +1235,16 @@ function AdminPage() {
                       type="button"
                       variant="outline"
                       size="sm"
+                      onClick={() => setWaAlertOrder(selectedOrder)}
+                      className="border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/10 text-xs flex items-center gap-1.5 h-7 cursor-pointer"
+                    >
+                      <MessageCircle className="size-3.5" />
+                      <span>WhatsApp Alert</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => setSlipOrder(selectedOrder)}
                       className="border-gold/40 text-gold hover:bg-gold/10 text-xs flex items-center gap-1.5 h-7 cursor-pointer"
                     >
@@ -1245,7 +1266,11 @@ function AdminPage() {
               </DialogHeader>
 
               {/* Customer and Delivery Info */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xs bg-muted/30 p-4 text-xs">
+              <div
+                className={`grid grid-cols-1 gap-4 rounded-xs bg-muted/30 p-4 text-xs ${
+                  selectedOrder.shippingDetails ? "sm:grid-cols-3" : "sm:grid-cols-2"
+                }`}
+              >
                 <div className="space-y-1">
                   <p className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
                     Customer
@@ -1272,6 +1297,26 @@ function AdminPage() {
                     {selectedOrder.customer.pincode}
                   </p>
                 </div>
+
+                {selectedOrder.shippingDetails && (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-foreground uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                      <Truck className="size-3 text-gold" />
+                      Courier Dispatch
+                    </p>
+                    <p className="font-medium text-foreground">
+                      {selectedOrder.shippingDetails.courierName}
+                    </p>
+                    <p className="font-mono text-xs font-semibold text-gold">
+                      AWB: {selectedOrder.shippingDetails.trackingNumber}
+                    </p>
+                    {selectedOrder.shippingDetails.estimatedDelivery && (
+                      <p className="text-[11px] text-muted-foreground">
+                        ETA: {selectedOrder.shippingDetails.estimatedDelivery}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Order Items */}
@@ -1401,6 +1446,16 @@ function AdminPage() {
         onOpenChange={(open) => {
           if (!open) setSlipOrder(null);
         }}
+      />
+
+      {/* WhatsApp Customer Notification Hub */}
+      <WhatsAppNotificationDialog
+        order={waAlertOrder}
+        open={Boolean(waAlertOrder)}
+        onOpenChange={(open) => {
+          if (!open) setWaAlertOrder(null);
+        }}
+        onOrderUpdated={fetchAdminOrders}
       />
     </div>
   );

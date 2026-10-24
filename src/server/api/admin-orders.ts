@@ -19,7 +19,12 @@ export async function handleGetAdminOrders() {
   }
 }
 
-export async function handleUpdateOrderStatus(orderId: string, nextStatus: OrderStatus) {
+export async function handleUpdateOrderStatus(
+  orderId: string,
+  nextStatus: OrderStatus,
+  shippingDetails?: import("@/data/types").ShippingDetails,
+  env?: any,
+) {
   const allowedStatuses: OrderStatus[] = [
     "PENDING_PAYMENT",
     "PAID",
@@ -34,7 +39,7 @@ export async function handleUpdateOrderStatus(orderId: string, nextStatus: Order
   }
 
   try {
-    const db = getDb();
+    const db = getDb(env);
     const docRef = db.collection("orders").doc(orderId);
     const snap = await docRef.get();
 
@@ -42,12 +47,56 @@ export async function handleUpdateOrderStatus(orderId: string, nextStatus: Order
       return { status: 404, body: { error: `Order ${orderId} not found` } };
     }
 
-    await docRef.update({
+    const order = snap.data() as Order;
+    const updatePayload: Record<string, any> = {
       status: nextStatus,
       updatedAt: new Date().toISOString(),
-    });
+    };
 
-    return { status: 200, body: { success: true, orderId, status: nextStatus } };
+    if (shippingDetails) {
+      updatePayload.shippingDetails = {
+        ...shippingDetails,
+        dispatchedAt: shippingDetails.dispatchedAt || new Date().toISOString(),
+      };
+    }
+
+    await docRef.update(updatePayload);
+
+    // Trigger Automated WhatsApp Notification if enabled
+    try {
+      const { sendWhatsAppNotification } = await import("../whatsapp-alerts");
+      const updatedOrder = { ...order, ...updatePayload };
+      if (nextStatus === "SHIPPED" && (shippingDetails || order.shippingDetails)) {
+        await sendWhatsAppNotification(
+          updatedOrder,
+          {
+            stage: "SHIPPED",
+            shippingDetails: shippingDetails || order.shippingDetails,
+          },
+          env,
+        );
+      } else if (nextStatus === "DELIVERED") {
+        await sendWhatsAppNotification(
+          updatedOrder,
+          {
+            stage: "DELIVERED",
+          },
+          env,
+        );
+      }
+    } catch {
+      // Non-fatal notification failure
+    }
+
+    return {
+      status: 200,
+      body: {
+        success: true,
+        orderId,
+        status: nextStatus,
+        shippingDetails: updatePayload.shippingDetails,
+      },
+    };
   } catch (err: any) {
     console.error("❌ [Admin Orders] Status update failed:", err);
     return { status: 500, body: { error: err.message } };

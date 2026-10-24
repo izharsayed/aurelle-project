@@ -95,7 +95,7 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
     // 5. Admin: Update Fulfillment Status
     if (pathname === "/api/admin/orders/status" && request.method === "POST") {
       const body = await request.json();
-      const result = await handleUpdateOrderStatus(body.orderId, body.status);
+      const result = await handleUpdateOrderStatus(body.orderId, body.status, body.shippingDetails, env);
       return new Response(JSON.stringify(result.body), {
         status: result.status,
         headers: jsonHeaders,
@@ -253,11 +253,30 @@ export async function handleApiRoute(request: Request, passedEnv?: any): Promise
       });
     }
 
-    // 20. Coupons Admin: Delete Coupon
-    if (pathname.startsWith("/api/admin/coupons/") && request.method === "DELETE") {
-      const code = decodeURIComponent(pathname.replace("/api/admin/coupons/", ""));
-      const { deleteCoupon } = await import("./coupons");
-      const result = await deleteCoupon(code, env);
+    // 21. WhatsApp Alerts: Dispatch notification for an order
+    if (pathname === "/api/admin/orders/send-whatsapp" && request.method === "POST") {
+      const { sendWhatsAppNotification } = await import("./whatsapp-alerts");
+      const { getDb } = await import("./firebase");
+      const body = await request.json().catch(() => ({}));
+      const db = getDb(env);
+      const snap = await db.collection("orders").doc(body.orderId).get();
+      if (!snap.exists) {
+        return new Response(JSON.stringify({ error: "Order not found" }), {
+          status: 404,
+          headers: jsonHeaders,
+        });
+      }
+      const order = snap.data();
+      const result = await sendWhatsAppNotification(
+        order,
+        {
+          stage: body.stage,
+          customMessage: body.customMessage,
+          shippingDetails: body.shippingDetails || order.shippingDetails,
+          baseUrl: url.origin,
+        },
+        env,
+      );
       return new Response(JSON.stringify(result), {
         status: 200,
         headers: jsonHeaders,
